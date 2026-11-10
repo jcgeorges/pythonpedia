@@ -1,0 +1,256 @@
+
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Pythonpédia — Documentation API</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f3f6fb;
+            color: #17243b;
+            margin: 0;
+            line-height: 1.6;
+        }
+
+        header {
+            background: #173d67;
+            color: white;
+            padding: 45px 8%;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 32px;
+        }
+
+        header p {
+            color: #d5e3f5;
+        }
+
+        main {
+            max-width: 950px;
+            margin: 35px auto;
+            padding: 0 20px;
+        }
+
+        section {
+            background: white;
+            padding: 25px;
+            margin-bottom: 22px;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+        }
+
+        h2 {
+            font-size: 21px;
+            color: #173d67;
+        }
+
+        h3 {
+            color: #2563eb;
+            font-size: 17px;
+        }
+
+        code {
+            background: #eef3fa;
+            padding: 3px 6px;
+            border-radius: 4px;
+        }
+
+        pre {
+            background: #17243b;
+            color: #e2e8f0;
+            padding: 18px;
+            border-radius: 8px;
+            overflow-x: auto;
+        }
+
+        pre code {
+            background: transparent;
+            padding: 0;
+        }
+
+        a {
+            color: #2563eb;
+            overflow-wrap: anywhere;
+        }
+
+        .methode {
+            display: inline-block;
+            background: #dcfce7;
+            color: #166534;
+            padding: 3px 9px;
+            border-radius: 5px;
+            font-weight: bold;
+            font-size: 12px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 25px;
+            color: #64748b;
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <h1>Pythonpédia</h1>
+    <p>Documentation de l'API REST de l'encyclopédie
+       distribuée consacrée au langage Python.</p>
+</header>
+
+<main>
+
+    <section>
+        <h2>Présentation du projet</h2>
+
+        <p>
+            Pythonpédia est une encyclopédie collaborative
+            contenant des références vers des ressources
+            disponibles sur Internet concernant Python.
+        </p>
+
+        <p>
+            Les données sont organisées en topics,
+            items et URL. Elles sont réparties sur plusieurs
+            serveurs qui peuvent échanger leurs références.
+        </p>
+
+        <p>
+            Cette API permet de consulter les références
+            disponibles sur ce serveur et de découvrir
+            les autres serveurs connus.
+        </p>
+    </section>
+
+    <section>
+        <h2>Structure des données</h2>
+
+        <p>
+            Chaque topic représente un thème Python.
+            Chaque item regroupe des URL selon la nature
+            de l'information.
+        </p>
+
+        <pre><code>{
+  "fonctions": {
+    "definition": [
+      "https://docs.python.org/fr/3/tutorial/controlflow.html"
+    ],
+    "exemple": [
+      "https://docs.python.org/fr/3/library/functions.html"
+    ]
+  }
+}</code></pre>
+    </section>
+
+    <section>
+        <h2>Endpoints disponibles</h2>
+
+        <h3>
+            <span class="methode">GET</span>
+            /ws/topics
+        </h3>
+
+        <p>Renvoie la liste des topics disponibles localement.</p>
+
+        <a href="/ws/topics">Tester cette route</a>
+
+        <pre><code>[
+  "fonctions",
+  "POO",
+  "exceptions"
+]</code></pre>
+
+        <h3>
+            <span class="methode">GET</span>
+            /ws/topic/&lt;topic&gt;
+        </h3>
+
+        <p>
+            Renvoie les items et les URL correspondant
+            au topic demandé.
+        </p>
+
+        <a href="/ws/topic/fonctions">
+            Exemple : consulter le topic fonctions
+        </a>
+
+        <pre><code>{
+  "definition": [
+    "https://docs.python.org/fr/3/tutorial/controlflow.html"
+  ],
+  "exemple": [
+    "https://docs.python.org/fr/3/library/functions.html"
+  ]
+}</code></pre>
+
+        <p>
+            Si le topic n'existe pas, l'API renvoie
+            une erreur HTTP 404.
+        </p>
+
+        <h3>
+            <span class="methode">GET</span>
+            /ws/annuaire
+        </h3>
+
+        <p>
+            Renvoie les adresses des serveurs connus
+            par ce serveur Pythonpédia.
+        </p>
+
+        <a href="/ws/annuaire">Consulter l'annuaire</a>
+
+        <pre><code>[
+  "http://172.20.45.162:5000",
+  "http://172.20.45.175:5000"
+]</code></pre>
+    </section>
+
+    <section>
+        <h2>Interroger l'API</h2>
+
+        <p>
+            Les endpoints utilisent la méthode HTTP GET
+            et retournent des données JSON.
+        </p>
+
+        <p>
+            Depuis un terminal, remplacez l'adresse
+            ci-dessous par celle du serveur à consulter :
+        </p>
+
+        <pre><code>curl http://ADRESSE_DU_SERVEUR:5000/ws/topics</code></pre>
+
+        <p>
+            L'API peut également être interrogée depuis
+            une application Python avec la bibliothèque
+            Requests.
+        </p>
+
+        <pre><code>import requests
+
+url = "http://ADRESSE_DU_SERVEUR:5000/ws/topics"
+
+reponse = requests.get(url, timeout=5)
+reponse.raise_for_status()
+
+print(reponse.json())</code></pre>
+    </section>
+
+</main>
+
+<footer>
+    Pythonpédia — Encyclopédie distribuée sur Python
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,541 @@
+{
+    "fonctions": {
+        "definition": [
+            "https://docs.python.org/fr/3/tutorial/controlflow.html#defining-functions",
+            "https://docs.python.org/3/tutorial/controlflow.html#defining-functions",
+            "https://docs.python.org/fr/3/tutorial/controlflow.html",
+            "https://docs.python.org/3/tutorial/controlflow.html"
+        ],
+        "tutoriel": [
+            "https://docs.python.org/fr/3/tutorial/controlflow.html",
+            "https://www.w3schools.com/python/python_functions.asp",
+            "https://docs.python.org/fr/3/tutorial/controlflow.html#defining-functions",
+            "https://docs.python.org/3/tutorial/controlflow.html",
+            "https://realpython.com/defining-your-own-python-function/",
+            "https://realpython.com/defining-your-own-python-function"
+        ],
+        "exemple": [
+            "https://docs.python.org/fr/3/library/functions.html",
+            "https://www.programiz.com/python-programming/function",
+            "https://www.w3schools.com/python/python_functions.asp",
+            "https://python.developpez.com/cours/TutoSwinnen/?page=page_9",
+            "https://docs.python.org/3/howto/functional.html"
+        ],
+        "astuce": [
+            "https://docs.python.org/fr/3/howto/functional.html",
+            "https://python.developpez.com/tutoriels/apprendre-programmation-python/les-bases/?page=fonction",
+            "https://realpython.com/python-kwargs-and-args"
+        ],
+        "bonne pratique": [
+            "https://docs.python.org/3/tutorial/controlflow.html#default-argument-values",
+            "https://peps.python.org/pep-0008/",
+            "https://peps.python.org/pep-0008/#function-and-variable-names",
+            "https://peps.python.org/pep-0008",
+            "https://docs.python.org/3/tutorial/controlflow.html"
+        ],
+        "définition": [
+            "https://docs.python.org/3/tutorial/controlflow.html#defining-functions",
+            "https://docs.python.org/fr/3/tutorial/controlflow.html#defining-functions",
+            "https://docs.python.org/3/tutorial/controlflow.html",
+            "https://docs.python.org/fr/3/tutorial/controlflow.html"
+        ],
+        "tuto": [
+            "https://docs.python.org/3/tutorial/controlflow.html",
+            "https://docs.python.org/fr/3/tutorial/controlflow.html",
+            "https://realpython.com/defining-your-own-python-function/",
+            "https://realpython.com/defining-your-own-python-function"
+        ]
+    },
+    "structures_donnees": {
+        "definition": [
+            "https://docs.python.org/fr/3/tutorial/datastructures.html"
+        ],
+        "tutoriel": [
+            "https://docs.python.org/fr/3/tutorial/datastructures.html#more-on-lists",
+            "https://docs.python.org/fr/3/tutorial/datastructures.html"
+        ],
+        "exemple": [
+            "https://docs.python.org/fr/3/tutorial/datastructures.html#dictionaries",
+            "https://docs.python.org/fr/3/tutorial/datastructures.html"
+        ]
+    },
+    "POO": {
+        "definition": [
+            "https://docs.python.org/fr/3/tutorial/classes.html"
+        ],
+        "tutoriel": [
+            "https://docs.python.org/fr/3/tutorial/classes.html#class-objects",
+            "https://www.w3schools.com/python/python_classes.asp",
+            "https://docs.python.org/fr/3/tutorial/classes.html"
+        ],
+        "exemple": [
+            "https://docs.python.org/fr/3/tutorial/classes.html#instance-objects",
+            "https://www.programiz.com/python-programming/class",
+            "https://realpython.com/python3-object-oriented-programming/",
+            "https://www.w3schools.com/python/python_classes.asp",
+            "https://realpython.com/python3-object-oriented-programming",
+            "https://docs.python.org/fr/3/tutorial/classes.html"
+        ],
+        "FAQ": [
+            "https://docs.python.org/fr/3/faq/programming.html"
+        ],
+        "tuto": [
+            "https://docs.python.org/fr/3/tutorial/classes.html",
+            "https://docs.python.org/3/tutorial/classes.html",
+            "https://www.google.com/url?sa=t&source=web&rct=j&opi=89978449&url=https://www.youtube.com/watch%3Fv%3D0xQ5t0Jc8R8&ved=2ahUKEwiM5KHgg_2XAxU3R1cBHSRoNNUQwqsBegQIGhAB&usg=AOvVaw3AxHriq9laUCgRyJcU1nH-"
+        ],
+        "bonne_pratique": [
+            "https://realpython.com/python-pep8/",
+            "https://realpython.com/python-pep8"
+        ],
+        "Cours_complet": [
+            "https://www.google.com/url?sa=t&source=web&rct=j&opi=89978449&url=https://fr.scribd.com/document/923398323/Cours-Complet-POO-Bilingue&ved=2ahUKEwiQ79iGgv2XAxUGV6QEHTVRFL4QFnoECCMQAQ&usg=AOvVaw13gG_Kk5Bbhq-BNFcv7iQZ",
+            "https://www.google.com/url?sa=t&source=web&rct=j&opi=89978449&url=https://www.univ-usto.dz/images/coursenligne/dl_poo.pdf&ved=2ahUKEwiQ79iGgv2XAxUGV6QEHTVRFL4QFnoECB4QAQ&usg=AOvVaw30ap-o0N46JAvbrcZOE8Uq"
+        ],
+        "introduction": [
+            "https://www.google.com/url?sa=t&source=web&rct=j&opi=89978449&url=https://moodle.insa-toulouse.fr/pluginfile.php/6726/course/section/5804/poo.pdf&ved=2ahUKEwiOqobwgf2XAxVXSKQEHQwuCt0QFnoECCcQAQ&usg=AOvVaw0KrtVXR6_GL1vJmIpegkOJ",
+            "https://www.google.com/url?sa=t&source=web&rct=j&opi=89978449&url=https://www.9raytifclick.com/cours/poo-introduction/&ved=2ahUKEwiOqobwgf2XAxVXSKQEHQwuCt0QFnoECB8QAQ&usg=AOvVaw3zZc0ZCmgvX8a-v1dXfYIp"
+        ]
+    },
+    "exceptions": {
+        "definition": [
+            "https://docs.python.org/fr/3/tutorial/errors.html",
+            "https://docs.python.org/3/tutorial/errors.html"
+        ],
+        "tutoriel": [
+            "https://docs.python.org/fr/3/tutorial/errors.html#handling-exceptions",
+            "https://docs.python.org/3/library/exceptions.html",
+            "https://realpython.com/python-exceptions/",
+            "https://realpython.com/python-exceptions",
+            "https://docs.python.org/fr/3/tutorial/errors.html"
+        ],
+        "exemple": [
+            "https://docs.python.org/fr/3/tutorial/errors.html#raising-exceptions",
+            "https://docs.python.org/3/reference/compound_stmts.html#the-try-statement",
+            "https://www.w3schools.com/python/python_try_except.asp",
+            "https://docs.python.org/3/reference/compound_stmts.html",
+            "https://docs.python.org/fr/3/tutorial/errors.html"
+        ],
+        "bonne pratique": [
+            "https://docs.python.org/3/tutorial/errors.html#handling-exceptions",
+            "https://peps.python.org/pep-0008/#programming-recommendations",
+            "https://docs.python.org/3/tutorial/errors.html",
+            "https://peps.python.org/pep-0008"
+        ],
+        "définition": [
+            "https://docs.python.org/3/tutorial/errors.html"
+        ],
+        "tuto": [
+            "https://docs.python.org/3/library/exceptions.html",
+            "https://realpython.com/python-exceptions/",
+            "https://realpython.com/python-exceptions"
+        ]
+    },
+    "boucles": {
+        "definition": [
+            "https://docs.python.org/fr/3/tutorial/controlflow.html"
+        ],
+        "exemple": [
+            "https://www.programiz.com/python-programming/for-loop",
+            "https://docs.python.org/fr/3/tutorial/controlflow.html#the-range-function",
+            "https://docs.python.org/fr/3/tutorial/controlflow.html"
+        ],
+        "tutoriel": [
+            "https://www.w3schools.com/python/python_for_loops.asp",
+            "https://docs.python.org/fr/3/tutorial/controlflow.html#for-statements",
+            "https://docs.python.org/fr/3/tutorial/controlflow.html"
+        ]
+    },
+    "classes": {
+        "definition": [
+            "https://docs.python.org/fr/3/tutorial/classes.html"
+        ],
+        "exemple": [
+            "https://docs.python.org/fr/3/tutorial/classes.html#inheritance",
+            "https://docs.python.org/fr/3/tutorial/classes.html"
+        ],
+        "tuto": [
+            "https://docs.python.org/fr/3/tutorial/classes.html#class-objects",
+            "https://docs.python.org/fr/3/tutorial/classes.html"
+        ],
+        "tutoriel": [
+            "https://docs.python.org/fr/3/tutorial/classes.html#class-objects",
+            "https://docs.python.org/fr/3/tutorial/classes.html"
+        ]
+    },
+    "concurrence": {
+        "exemple": [
+            "https://docs.python.org/3/library/concurrent.futures.html",
+            "https://www.geeksforgeeks.org/multithreading-python-set-1/",
+            "https://docs.python.org/3/library/threading.html",
+            "https://www.geeksforgeeks.org/multithreading-python-set-1"
+        ],
+        "module": [
+            "https://docs.python.org/3/library/threading.html"
+        ],
+        "tuto": [
+            "https://docs.python.org/3/library/asyncio.html"
+        ],
+        "Autre": [
+            "https://docs.python.org/3/library/threading.html"
+        ],
+        "FAQ": [
+            "https://wiki.python.org/moin/GlobalInterpreterLock",
+            "https://docs.python.org/3/faq/library.html"
+        ],
+        "tutoriel": [
+            "https://docs.python.org/3/library/asyncio.html"
+        ],
+        "piège": [
+            "https://docs.python.org/3/glossary.html#term-global-interpreter-lock",
+            "https://docs.python.org/3/glossary.html"
+        ]
+    },
+    "fichiers": {
+        "definition": [
+            "https://docs.python.org/3/tutorial/inputoutput.html#reading-and-writing-files",
+            "https://docs.python.org/3/tutorial/inputoutput.html"
+        ],
+        "exemple": [
+            "https://www.w3schools.com/python/python_file_handling.asp"
+        ],
+        "piege": [
+            "https://docs.python.org/3/library/functions.html#open",
+            "https://realpython.com/working-with-files-in-python/",
+            "https://realpython.com/working-with-files-in-python",
+            "https://docs.python.org/3/library/functions.html"
+        ],
+        "tuto": [
+            "https://realpython.com/read-write-files-python/",
+            "https://realpython.com/read-write-files-python"
+        ],
+        "tutoriel": [
+            "https://realpython.com/read-write-files-python/",
+            "https://realpython.com/read-write-files-python"
+        ]
+    },
+    "listes": {
+        "definition": [
+            "https://docs.python.org/fr/3/tutorial/introduction.html#lists",
+            "https://docs.python.org/fr/3/tutorial/introduction.html"
+        ],
+        "exemple": [
+            "https://docs.python.org/fr/3/tutorial/datastructures.html#list-comprehensions",
+            "https://docs.python.org/fr/3/tutorial/datastructures.html"
+        ],
+        "tuto": [
+            "https://docs.python.org/fr/3/tutorial/datastructures.html",
+            "https://coddy.tech/docs/fr/python/lists"
+        ],
+        "tutoriel": [
+            "https://docs.python.org/fr/3/tutorial/datastructures.html",
+            "https://coddy.tech/docs/fr/python/lists"
+        ],
+        "astuce": [
+            "https://www.datacamp.com/fr/tutorial/python-reverse-list"
+        ],
+        "piege": [
+            "https://www.hackerone.com/blog/python-pitfalls-perils-using-lists-and-dicts-default-arguments"
+        ]
+    },
+    "random": {
+        "choice": [
+            "https://docs.python.org/3/library/random.html#random.choice",
+            "https://docs.python.org/3/library/random.html"
+        ],
+        "randint": [
+            "https://docs.python.org/3/library/random.html#random.randint",
+            "https://docs.python.org/3/library/random.html"
+        ]
+    },
+    "types": {
+        "definition": [
+            "https://docs.python.org/3/library/stdtypes.html",
+            "https://docs.python.org/fr/3/library/stdtypes.html",
+            "https://docs.python.org/3/library/typing.html",
+            "https://python.developpez.com/tutoriels/apprendre-programmation-python/les-bases/?page=fonction"
+        ],
+        "définition": [
+            "https://docs.python.org/3/library/stdtypes.html",
+            "https://docs.python.org/fr/3/library/stdtypes.html"
+        ],
+        "exemple": [
+            "https://docs.python.org/3/tutorial/datastructures.html",
+            "https://docs.python.org/fr/3/tutorial/introduction.html",
+            "https://www.w3schools.com/python/python_datatypes.asp"
+        ],
+        "piege": [
+            "https://docs.python.org/3/faq/programming.html#why-are-default-values-shared-between-objects",
+            "https://www.programiz.com/python-programming/type-conversion-and-casting",
+            "https://docs.python.org/3/faq/programming.html"
+        ],
+        "tuto": [
+            "https://docs.python.org/3/tutorial/introduction.html",
+            "https://docs.python.org/3/tutorial/introduction.html#using-python-as-a-calculator",
+            "https://docs.python.org/fr/3/tutorial/datastructures.html",
+            "https://realpython.com/python-data-types/",
+            "https://docs.python.org/fr/3/tutorial/",
+            "https://docs.python.org/fr/3/tutorial",
+            "https://realpython.com/python-data-types"
+        ],
+        "tutoriel": [
+            "https://www.w3schools.com/python/python_datatypes.asp",
+            "https://docs.python.org/3/tutorial/introduction.html",
+            "https://docs.python.org/3/tutorial/introduction.html#using-python-as-a-calculator",
+            "https://docs.python.org/fr/3/tutorial/",
+            "https://docs.python.org/fr/3/tutorial/datastructures.html",
+            "https://realpython.com/python-data-types/",
+            "https://docs.python.org/fr/3/tutorial",
+            "https://realpython.com/python-data-types"
+        ],
+        "FAQ": [
+            "https://docs.python.org/3/faq/programming.html"
+        ]
+    },
+    "modules": {
+        "definition": [],
+        "exemple": [],
+        "tuto": [
+            "https://docs.python.org/3/tutorial/modules.html"
+        ],
+        "tutoriel": [
+            "https://docs.python.org/3/tutorial/modules.html"
+        ]
+    },
+    "multithreading": {
+        "Autre": [
+            "https://docs.python.org/3/library/threading.html"
+        ],
+        "FAQ": [
+            "https://wiki.python.org/moin/GlobalInterpreterLock",
+            "https://docs.python.org/3/faq/library.html"
+        ],
+        "exemples": [
+            "https://www.geeksforgeeks.org/multithreading-python-set-1/",
+            "https://www.geeksforgeeks.org/multithreading-python-set-1"
+        ],
+        "exemple": [
+            "https://docs.python.org/3/library/threading.html"
+        ],
+        "piège": [
+            "https://docs.python.org/3/glossary.html#term-global-interpreter-lock",
+            "https://docs.python.org/3/glossary.html"
+        ]
+    },
+    "poo": {
+        "definition": [
+            "https://docs.python.org/fr/3/tutorial/classes.html"
+        ],
+        "exemple": [
+            "https://www.programiz.com/python-programming/class",
+            "https://docs.python.org/fr/3/tutorial/classes.html#instance-objects",
+            "https://realpython.com/python3-object-oriented-programming/",
+            "https://www.w3schools.com/python/python_classes.asp",
+            "https://realpython.com/python3-object-oriented-programming",
+            "https://docs.python.org/fr/3/tutorial/classes.html"
+        ],
+        "tutoriel": [
+            "https://www.w3schools.com/python/python_classes.asp",
+            "https://docs.python.org/3/tutorial/classes.html",
+            "https://docs.python.org/fr/3/tutorial/classes.html",
+            "https://docs.python.org/fr/3/tutorial/classes.html#class-objects",
+            "https://www.google.com/url?sa=t&source=web&rct=j&opi=89978449&url=https://www.youtube.com/watch%3Fv%3D0xQ5t0Jc8R8&ved=2ahUKEwiM5KHgg_2XAxU3R1cBHSRoNNUQwqsBegQIGhAB&usg=AOvVaw3AxHriq9laUCgRyJcU1nH-"
+        ],
+        "FAQ": [
+            "https://docs.python.org/fr/3/faq/programming.html"
+        ],
+        "bonne_pratique": [
+            "https://realpython.com/python-pep8/",
+            "https://realpython.com/python-pep8"
+        ],
+        "Cours_complet": [
+            "https://www.google.com/url?sa=t&source=web&rct=j&opi=89978449&url=https://fr.scribd.com/document/923398323/Cours-Complet-POO-Bilingue&ved=2ahUKEwiQ79iGgv2XAxUGV6QEHTVRFL4QFnoECCMQAQ&usg=AOvVaw13gG_Kk5Bbhq-BNFcv7iQZ",
+            "https://www.google.com/url?sa=t&source=web&rct=j&opi=89978449&url=https://www.univ-usto.dz/images/coursenligne/dl_poo.pdf&ved=2ahUKEwiQ79iGgv2XAxUGV6QEHTVRFL4QFnoECB4QAQ&usg=AOvVaw30ap-o0N46JAvbrcZOE8Uq"
+        ],
+        "introduction": [
+            "https://www.google.com/url?sa=t&source=web&rct=j&opi=89978449&url=https://moodle.insa-toulouse.fr/pluginfile.php/6726/course/section/5804/poo.pdf&ved=2ahUKEwiOqobwgf2XAxVXSKQEHQwuCt0QFnoECCcQAQ&usg=AOvVaw0KrtVXR6_GL1vJmIpegkOJ",
+            "https://www.google.com/url?sa=t&source=web&rct=j&opi=89978449&url=https://www.9raytifclick.com/cours/poo-introduction/&ved=2ahUKEwiOqobwgf2XAxVXSKQEHQwuCt0QFnoECB8QAQ&usg=AOvVaw3zZc0ZCmgvX8a-v1dXfYIp"
+        ],
+        "tuto": [
+            "https://docs.python.org/3/tutorial/classes.html",
+            "https://docs.python.org/fr/3/tutorial/classes.html",
+            "https://www.google.com/url?sa=t&source=web&rct=j&opi=89978449&url=https://www.youtube.com/watch%3Fv%3D0xQ5t0Jc8R8&ved=2ahUKEwiM5KHgg_2XAxU3R1cBHSRoNNUQwqsBegQIGhAB&usg=AOvVaw3AxHriq9laUCgRyJcU1nH-"
+        ]
+    },
+    "chaines": {
+        "exercice": [
+            "https://labex.io/fr/tutorials/python-work-with-strings-in-python-585785",
+            "https://www.w3resource.com/python-exercises/string/",
+            "https://www.w3resource.com/python-exercises/string"
+        ],
+        "methode": [
+            "https://labex.io/pythoncheatsheet/fr/cheatsheet/manipulating-strings"
+        ],
+        "tuto": [
+            "https://coddy.tech/docs/fr/python/strings",
+            "https://developers.google.com/edu/python/strings?hl=fr"
+        ],
+        "tutoriel": [
+            "https://coddy.tech/docs/fr/python/strings",
+            "https://developers.google.com/edu/python/strings?hl=fr"
+        ]
+    },
+    "dictionnaire": {
+        "astuce": [
+            "https://www.datacamp.com/fr/tutorial/python-dictionary-comprehension",
+            "https://www.datacamp.com/fr/tutorial/python-dictionary-methods",
+            "https://www.tutkit.com/fr/tutoriels-texte/20426-travailler-efficacement-avec-des-dictionnaires-en-python"
+        ],
+        "definition": [
+            "https://docs.python.org/fr/3/tutorial/datastructures.html#dictionaries",
+            "https://docs.python.org/fr/3/tutorial/datastructures.html"
+        ],
+        "exemple": [
+            "https://www.w3schools.com/python/python_dictionaries.asp"
+        ],
+        "tuto": [
+            "https://coddy.tech/docs/fr/python/lists"
+        ],
+        "tutoriel": [
+            "https://coddy.tech/docs/fr/python/lists"
+        ]
+    },
+    "Programmation": {
+        "Exercices": [
+            "https://www.google.com/url?sa=t&source=web&rct=j&opi=89978449&url=https://www.developpez.com/exercices&ved=2ahUKEwjA1aDcgv2XAxXhVKQEHcpwEjEQFnoECCIQAQ&usg=AOvVaw0OMOldWClgB2aBSoFNxQ99",
+            "https://www.google.com/url?sa=t&source=web&rct=j&opi=89978449&url=https://codex.forge.apps.education.fr/&ved=2ahUKEwjA1aDcgv2XAxXhVKQEHcpwEjEQFnoECB8QAQ&usg=AOvVaw1gepEv42ABPUgMvh9TP6eK"
+        ],
+        "exemple": [
+            "https://www.google.com/url?sa=t&source=web&rct=j&opi=89978449&url=https://www.ibm.com/docs/fr/i/7.5.0%3Ftopic%3Djava-simple-programming-examples&ved=2ahUKEwjHtf_Bgv2XAxVPbqQEHURwCOMQFnoECCwQAQ&usg=AOvVaw0EgioepIJtsoTTAY6qSrhp",
+            "https://www.google.com/url?sa=t&source=web&rct=j&opi=89978449&url=https://teetsh.com/progressions-programmations/modeles/&ved=2ahUKEwjHtf_Bgv2XAxVPbqQEHURwCOMQFnoECCUQAQ&usg=AOvVaw1OI-h3YpgdzHj_i0SDP0PG"
+        ],
+        "introduction": [
+            "https://www.google.com/url?sa=t&source=web&rct=j&opi=89978449&url=https://members.loria.fr/KTombre/DepInfo/PolyTC/tcinfo.pdf&ved=2ahUKEwiVzI6dgv2XAxWkQqQEHXHmOskQFnoECCYQAQ&usg=AOvVaw1jPCDBlw5BRQ5nyaxgPq-o",
+            "https://www.google.com/url?sa=t&source=web&rct=j&opi=89978449&url=https://edutechwiki.unige.ch/fr/Introduction_%25C3%25A0_la_programmation&ved=2ahUKEwiVzI6dgv2XAxWkQqQEHXHmOskQFnoECDYQAQ&usg=AOvVaw1Fg2Zw6r5j83zjXwSU1g5x"
+        ]
+    },
+    "Service_web": {
+        "Definition": [
+            "https://www.google.com/url?sa=t&source=web&rct=j&opi=89978449&url=http://www-igm.univ-mlv.fr/~dr/XPOSE2004/woollams/definition.html&ved=2ahUKEwjFvL2Ag_2XAxUJS1cBHVFHMsQQFnoECCsQAQ&usg=AOvVaw3B-W5LO2Ko4AUOZqktZdYs",
+            "https://www.google.com/url?sa=t&source=web&rct=j&opi=89978449&url=https://www.oracle.com/fr/cloud/definition-web-service/&ved=2ahUKEwjFvL2Ag_2XAxUJS1cBHVFHMsQQFnoECCoQAQ&usg=AOvVaw1fbRqyAGF7m9EpAcRvPHmL"
+        ],
+        "Examen": [
+            "https://www.google.com/url?sa=t&source=web&rct=j&opi=89978449&url=https://fr.scribd.com/document/686481186/Services-Web-Examen&ved=2ahUKEwiqydOvg_2XAxUTQVcBHbNbMckQFnoECBUQAQ&usg=AOvVaw3Lmzmcl2OxEKnL1IGlPiZ3",
+            "https://www.google.com/url?sa=t&source=web&rct=j&opi=89978449&url=https://www.coursjava.fr/SITE_NSY205/Examens/Site/2014-2015/1ereSession/CorrectionExamen1ereSessionNSY205_2014-2015.pdf&ved=2ahUKEwiqydOvg_2XAxUTQVcBHbNbMckQFnoECBIQAQ&usg=AOvVaw0bVR0ejtU13eDPoj7kM0R2"
+        ],
+        "Tuto": [
+            "https://www.google.com/url?sa=t&source=web&rct=j&opi=89978449&url=https://www.youtube.com/watch%3Fv%3Dd7Zgy6MlTHY&ved=2ahUKEwiZ596Zg_2XAxWmTFcBHVa0BRoQwqsBegQIGhAB&usg=AOvVaw07pMQ7XgH7nBKqHKUecE_z",
+            "https://www.google.com/url?sa=t&source=web&rct=j&opi=89978449&url=https://fr.linkedin.com/learning/les-fondements-de-la-programmation-les-services-web-et-api/definir-les-services-web&ved=2ahUKEwiZ596Zg_2XAxWmTFcBHVa0BRoQwqsBegQIGBAB&usg=AOvVaw2gjb-aZMzAgtEvYDj2seuG"
+        ]
+    },
+    "Pandas": {
+        "définition": [
+            "https://fr.wikipedia.org/wiki/Pandas",
+            "https://pandas.pydata.org/docs/user_guide/dsintro.html"
+        ],
+        "exercices": [
+            "https://www.w3resource.com/python-exercises/pandas/index.php",
+            "https://www.kaggle.com/learn/pandas"
+        ],
+        "tuto": [
+            "https://pandas.pydata.org/docs/getting_started/index.html",
+            "https://www.youtube.com/watch?v=H_pVrg1_49w"
+        ]
+    },
+    "django": {
+        "définition": [
+            "https://fr.wikipedia.org/wiki/Django_(framework)",
+            "https://docs.djangoproject.com/en/4.2/intro/overview"
+        ],
+        "exercices": [
+            "https://www.w3resource.com/python-exercises/django/index.php",
+            "https://www.geeksforgeeks.org/django-tutorial"
+        ],
+        "tuto": [
+            "https://docs.djangoproject.com/en/4.2/intro/tutorial01",
+            "https://www.youtube.com/watch?v=F5mRW0jo-U4"
+        ],
+        "tutoriel": [
+            "https://docs.djangoproject.com/en/4.2/intro/tutorial01",
+            "https://www.youtube.com/watch?v=F5mRW0jo-U4"
+        ]
+    },
+    "pandas": {
+        "définition": [
+            "https://fr.wikipedia.org/wiki/Pandas",
+            "https://pandas.pydata.org/docs/user_guide/dsintro.html"
+        ],
+        "exercices": [
+            "https://www.kaggle.com/learn/pandas",
+            "https://www.w3resource.com/python-exercises/pandas/index.php"
+        ],
+        "tuto": [
+            "https://pandas.pydata.org/docs/getting_started/index.html",
+            "https://www.youtube.com/watch?v=H_pVrg1_49w"
+        ],
+        "tutoriel": [
+            "https://pandas.pydata.org/docs/getting_started/index.html",
+            "https://www.youtube.com/watch?v=H_pVrg1_49w"
+        ]
+    },
+    "programmation": {
+        "Exercices": [
+            "https://www.google.com/url?sa=t&source=web&rct=j&opi=89978449&url=https://codex.forge.apps.education.fr/&ved=2ahUKEwjA1aDcgv2XAxXhVKQEHcpwEjEQFnoECB8QAQ&usg=AOvVaw1gepEv42ABPUgMvh9TP6eK",
+            "https://www.google.com/url?sa=t&source=web&rct=j&opi=89978449&url=https://www.developpez.com/exercices&ved=2ahUKEwjA1aDcgv2XAxXhVKQEHcpwEjEQFnoECCIQAQ&usg=AOvVaw0OMOldWClgB2aBSoFNxQ99"
+        ],
+        "exemple": [
+            "https://www.google.com/url?sa=t&source=web&rct=j&opi=89978449&url=https://teetsh.com/progressions-programmations/modeles/&ved=2ahUKEwjHtf_Bgv2XAxVPbqQEHURwCOMQFnoECCUQAQ&usg=AOvVaw1OI-h3YpgdzHj_i0SDP0PG",
+            "https://www.google.com/url?sa=t&source=web&rct=j&opi=89978449&url=https://www.ibm.com/docs/fr/i/7.5.0%3Ftopic%3Djava-simple-programming-examples&ved=2ahUKEwjHtf_Bgv2XAxVPbqQEHURwCOMQFnoECCwQAQ&usg=AOvVaw0EgioepIJtsoTTAY6qSrhp"
+        ],
+        "introduction": [
+            "https://www.google.com/url?sa=t&source=web&rct=j&opi=89978449&url=https://edutechwiki.unige.ch/fr/Introduction_%25C3%25A0_la_programmation&ved=2ahUKEwiVzI6dgv2XAxWkQqQEHXHmOskQFnoECDYQAQ&usg=AOvVaw1Fg2Zw6r5j83zjXwSU1g5x",
+            "https://www.google.com/url?sa=t&source=web&rct=j&opi=89978449&url=https://members.loria.fr/KTombre/DepInfo/PolyTC/tcinfo.pdf&ved=2ahUKEwiVzI6dgv2XAxWkQqQEHXHmOskQFnoECCYQAQ&usg=AOvVaw1jPCDBlw5BRQ5nyaxgPq-o"
+        ]
+    },
+    "service_web": {
+        "Definition": [
+            "https://www.google.com/url?sa=t&source=web&rct=j&opi=89978449&url=http://www-igm.univ-mlv.fr/~dr/XPOSE2004/woollams/definition.html&ved=2ahUKEwjFvL2Ag_2XAxUJS1cBHVFHMsQQFnoECCsQAQ&usg=AOvVaw3B-W5LO2Ko4AUOZqktZdYs",
+            "https://www.google.com/url?sa=t&source=web&rct=j&opi=89978449&url=https://www.oracle.com/fr/cloud/definition-web-service/&ved=2ahUKEwjFvL2Ag_2XAxUJS1cBHVFHMsQQFnoECCoQAQ&usg=AOvVaw1fbRqyAGF7m9EpAcRvPHmL"
+        ],
+        "Examen": [
+            "https://www.google.com/url?sa=t&source=web&rct=j&opi=89978449&url=https://fr.scribd.com/document/686481186/Services-Web-Examen&ved=2ahUKEwiqydOvg_2XAxUTQVcBHbNbMckQFnoECBUQAQ&usg=AOvVaw3Lmzmcl2OxEKnL1IGlPiZ3",
+            "https://www.google.com/url?sa=t&source=web&rct=j&opi=89978449&url=https://www.coursjava.fr/SITE_NSY205/Examens/Site/2014-2015/1ereSession/CorrectionExamen1ereSessionNSY205_2014-2015.pdf&ved=2ahUKEwiqydOvg_2XAxUTQVcBHbNbMckQFnoECBIQAQ&usg=AOvVaw0bVR0ejtU13eDPoj7kM0R2"
+        ],
+        "Tuto": [
+            "https://www.google.com/url?sa=t&source=web&rct=j&opi=89978449&url=https://fr.linkedin.com/learning/les-fondements-de-la-programmation-les-services-web-et-api/definir-les-services-web&ved=2ahUKEwiZ596Zg_2XAxWmTFcBHVa0BRoQwqsBegQIGBAB&usg=AOvVaw2gjb-aZMzAgtEvYDj2seuG",
+            "https://www.google.com/url?sa=t&source=web&rct=j&opi=89978449&url=https://www.youtube.com/watch%3Fv%3Dd7Zgy6MlTHY&ved=2ahUKEwiZ596Zg_2XAxWmTFcBHVa0BRoQwqsBegQIGhAB&usg=AOvVaw07pMQ7XgH7nBKqHKUecE_z"
+        ]
+    },
+    "definition": {
+        "regression_lineaire": [
+            "https://oraprdnt.uqtr.uquebec.ca/Gscdepot/paf1010/19/M13.pdf"
+        ],
+        "regression_logistique": [
+            "https://hal.science/hal-04433803/document"
+        ]
+    },
+    "exercises": {
+        "regression_lineaire": [],
+        "regression_logistique": [
+            "https://hal.science/hal-04433803/document"
+        ]
+    },
+    "site_title": {},
+    "travaux_pratiques": {
+        "regression_lineaire": [
+            "https://www.lamsade.dauphine.fr/~stajouri/doc/Cours_Projet_ADD_2.pdf"
+        ],
+        "regression_logistique": [
+            "https://adeline.e-samson.org/wp-content/uploads/2014/10/tplogistic.pdf"
+        ]
+    },
+    "videos": {
+        "regression_lineaire": [
+            "https://www.youtube.com/results?search_query=regression+lineaire+cours"
+        ],
+        "regression_logistique": [
+            "https://www.youtube.com/results?search_query=regression+logistique+cours"
+        ]
+    },
+    "welcome_message": {}
+}
