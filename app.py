@@ -7,6 +7,12 @@ import threading
 from datetime import datetime
 from pathlib import Path
 from urllib.parse import urlsplit
+from services.database import (
+    lire_json,
+    enregistrer_json,
+    FICHIER_TOPICS,
+    FICHIER_SERVEURS
+)
 
 from flask import (
     Flask,
@@ -29,8 +35,8 @@ app.secret_key = secrets.token_hex(32)
 
 BASE_DIR = Path(__file__).resolve().parent
 
-FICHIER_TOPICS = BASE_DIR / "data" / "topics.json"
-FICHIER_SERVEURS = BASE_DIR / "data" / "serveurs.json"
+# FICHIER_TOPICS = BASE_DIR / "data" / "topics.json"
+# FICHIER_SERVEURS = BASE_DIR / "data" / "serveurs.json"
 SCRIPT_SYNCHRO = BASE_DIR / "services" / "synchronisation.py"
 
 verrou_donnees = threading.Lock()
@@ -40,21 +46,6 @@ dernier_rapport = None
 # ------------------------------------------
 # FONCTIONS UTILITAIRES
 # ------------------------------------------
-
-def lire_json(chemin):
-    with open(chemin, "r", encoding="utf-8") as fichier:
-        return json.load(fichier)
-
-
-def enregistrer_json(chemin, donnees):
-    with open(chemin, "w", encoding="utf-8") as fichier:
-        json.dump(
-            donnees,
-            fichier,
-            indent=4,
-            ensure_ascii=False
-        )
-
 
 def gestion_locale():
     """Autoriser les modifications uniquement en local."""
@@ -273,7 +264,7 @@ def lancer_synchronisation():
 
     try:
         resultat = subprocess.run(
-            [sys.executable, str(SCRIPT_SYNCHRO)],
+            [sys.executable, "-m", "services.synchronisation"],
             cwd=BASE_DIR,
             capture_output=True,
             text=True,
@@ -334,8 +325,7 @@ def lancer_synchronisation():
 
 if __name__ == "__main__":
     app.run(
-        host="0.0.0.0",
+        host="127.0.0.1",
         port=5000,
-        debug=False,
-        threaded=True
+        debug=False
     )

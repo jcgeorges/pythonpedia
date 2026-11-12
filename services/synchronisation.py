@@ -3,26 +3,20 @@ import json
 import ipaddress
 from pathlib import Path
 from urllib.parse import quote, urlsplit
+from services.database import (
+    lire_json,
+    enregistrer_json,
+    FICHIER_TOPICS,
+    FICHIER_SERVEURS
+)
 
 import requests
 
 
 # Chemins vers les fichiers de données
 BASE_DIR = Path(__file__).resolve().parent.parent
-FICHIER_TOPICS = BASE_DIR / "data" / "topics.json"
-FICHIER_SERVEURS = BASE_DIR / "data" / "serveurs.json"
-
-
-def lire_json(chemin):
-    """Lire un fichier JSON local."""
-    with open(chemin, "r", encoding="utf-8") as fichier:
-        return json.load(fichier)
-
-
-def enregistrer_json(chemin, donnees):
-    """Enregistrer des données dans un fichier JSON."""
-    with open(chemin, "w", encoding="utf-8") as fichier:
-        json.dump(donnees, fichier, indent=4, ensure_ascii=False)
+# FICHIER_TOPICS = BASE_DIR / "data" / "topics.json"
+# FICHIER_SERVEURS = BASE_DIR / "data" / "serveurs.json"
 
 
 def requete_json(url):
