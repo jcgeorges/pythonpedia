@@ -1,4 +1,5 @@
 
+import os
 import json
 import ipaddress
 from pathlib import Path
@@ -87,12 +88,19 @@ def adresse_valide(adresse):
         try:
             ip = ipaddress.ip_address(url.hostname)
 
+            mode_simulation = (
+                os.environ.get("PYTHONPEDIA_ALLOW_LOOPBACK") == "1"
+                )
+            
+            if ip.is_loopback and not mode_simulation:
+                return False
+            
             if (
-                ip.is_loopback
-                or ip.is_unspecified
+                ip.is_unspecified
                 or ip.is_multicast
                 or ip.is_link_local
-            ):
+                or ip.is_reserved):
+                
                 return False
 
         except ValueError:
