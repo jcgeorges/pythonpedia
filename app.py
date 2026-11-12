@@ -319,6 +319,20 @@ def lancer_synchronisation():
     return redirect(url_for("tableau_de_bord"))
 
 
+@app.route("/dashboard/references", methods=["GET"])
+def page_references():
+    return render_template("references.html")
+
+
+@app.route("/dashboard/serveurs", methods=["GET"])
+def page_serveurs():
+    return render_template("serveurs.html")
+
+
+@app.route("/dashboard/synchronisation", methods=["GET"])
+def page_synchronisation():
+    return render_template("synchronisation.html")
+
 # ------------------------------------------
 # DÉMARRAGE UNIQUE
 # ------------------------------------------

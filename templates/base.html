@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>
+        {% block title %}Pythonpédia{% endblock %}
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/style.css') }}"
+    >
+</head>
+
+<body>
+
+    <div class="app-container">
+
+        <!-- BARRE LATÉRALE -->
+
+        <aside class="sidebar">
+
+            <div class="sidebar-header">
+                <h2>🐍 Pythonpédia</h2>
+                <p>Encyclopédie distribuée</p>
+            </div>
+
+            <nav class="sidebar-nav">
+
+                <a
+                    href="{{ url_for('tableau_de_bord') }}"
+                    class="{% if request.endpoint == 'tableau_de_bord' %}active{% endif %}"
+                >
+                    Vue d'ensemble
+                </a>
+
+                <a
+                    href="{{ url_for('page_references') }}"
+                    class="{% if request.endpoint == 'page_references' %}active{% endif %}"
+                >
+                    Références
+                </a>
+
+                <a
+                    href="{{ url_for('page_serveurs') }}"
+                    class="{% if request.endpoint == 'page_serveurs' %}active{% endif %}"
+                >
+                    Serveurs
+                </a>
+
+                <a
+                    href="{{ url_for('page_synchronisation') }}"
+                    class="{% if request.endpoint == 'page_synchronisation' %}active{% endif %}"
+                >
+                    Synchronisation
+                </a>
+
+                <a href="{{ url_for('accueil') }}">
+                    Documentation API
+                </a>
+
+            </nav>
+
+            <div class="sidebar-footer">
+                <p>Pythonpédia</p>
+                <span>Version de développement</span>
+            </div>
+
+        </aside>
+
+        <!-- CONTENU PRINCIPAL -->
+
+        <div class="main-container">
+
+            <header class="topbar">
+
+                <div>
+                    <h1>
+                        {% block page_title %}
+                        Tableau de bord
+                        {% endblock %}
+                    </h1>
+
+                    <p>
+                        {% block page_subtitle %}
+                        Gestion de l'encyclopédie Python
+                        {% endblock %}
+                    </p>
+                </div>
+
+            </header>
+
+            <main class="main-content">
+
+                {% with messages = get_flashed_messages() %}
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="notification">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+
+                {% block content %}{% endblock %}
+
+            </main>
+
+        </div>
+
+    </div>
+
+</body>
+</html>
