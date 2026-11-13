@@ -1,726 +1,387 @@
+{% extends "base.html" %}
 
-<!DOCTYPE html>
-<html lang="fr">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>Pythonpédia — Tableau de bord</title>
-
-    <style>
-        :root {
-            --bleu: #2563eb;
-            --bleu-fonce: #173d67;
-            --fond: #f3f6fb;
-            --texte: #17243b;
-            --secondaire: #64748b;
-            --bordure: #e2e8f0;
-        }
-
-        * {
-            box-sizing: border-box;
-        }
-
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background: var(--fond);
-            color: var(--texte);
-            line-height: 1.5;
-        }
-
-        /* EN-TÊTE */
-
-        header {
-            background: var(--bleu-fonce);
-            color: white;
-            padding: 24px 6%;
-        }
-
-        header h1 {
-            margin: 0 0 6px;
-            font-size: 28px;
-        }
-
-        header p {
-            margin: 0;
-            color: #d0e0f2;
-        }
-
-        main {
-            max-width: 1200px;
-            margin: 30px auto;
-            padding: 0 20px;
-        }
-
-        /* CARTES STATISTIQUES */
-
-        .statistiques {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 16px;
-            margin-bottom: 30px;
-        }
-
-        .carte,
-        .section {
-            background: white;
-            border: 1px solid var(--bordure);
-            border-radius: 12px;
-            padding: 22px;
-        }
-
-        .carte span {
-            display: block;
-            color: var(--secondaire);
-            font-size: 14px;
-        }
-
-        .carte strong {
-            display: block;
-            margin-top: 12px;
-            font-size: 30px;
-            color: var(--bleu);
-        }
-
-        /* SECTIONS */
-
-        .section {
-            margin-bottom: 24px;
-        }
-
-        .section h2 {
-            margin-top: 0;
-            font-size: 20px;
-        }
-
-        .section > p {
-            color: var(--secondaire);
-        }
-
-        /* FORMULAIRES */
-
-        .champ {
-            margin-bottom: 18px;
-        }
-
-        .champ label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            font-size: 14px;
-        }
-
-        .champ input {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid var(--bordure);
-            border-radius: 8px;
-            font-size: 14px;
-        }
-
-        .champ input:focus,
-        .recherche input:focus {
-            outline: 2px solid #93c5fd;
-            border-color: var(--bleu);
-        }
-
-        button {
-            background: var(--bleu);
-            border: none;
-            color: white;
-            padding: 12px 20px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 14px;
-        }
-
-        button:hover {
-            background: #1d4ed8;
-        }
-
-        .message {
-            margin-top: 16px;
-            padding: 12px 15px;
-            border-radius: 8px;
-            background: #eff6ff;
-            color: #1d4ed8;
-            border: 1px solid #bfdbfe;
-        }
-
-        /* SYNCHRONISATION */
-
-        .rapport-synchro {
-            margin-top: 24px;
-            padding: 18px;
-            background: #f8fafc;
-            border: 1px solid var(--bordure);
-            border-radius: 10px;
-        }
-
-        .rapport-synchro h3 {
-            margin-top: 0;
-            font-size: 17px;
-        }
-
-        .etat-succes {
-            color: #15803d;
-            font-weight: 600;
-        }
-
-        .etat-erreur {
-            color: #b91c1c;
-            font-weight: 600;
-        }
-
-        .rapport-contenu {
-            background: #17243b;
-            color: #e2e8f0;
-            padding: 16px;
-            border-radius: 8px;
-            overflow: auto;
-            max-height: 350px;
-            font-size: 13px;
-            line-height: 1.6;
-            white-space: pre-wrap;
-            overflow-wrap: anywhere;
-        }
-
-        /* RECHERCHE */
-
-        .recherche {
-            display: flex;
-            gap: 10px;
-            margin: 20px 0;
-        }
-
-        .recherche input {
-            padding: 12px;
-            border: 1px solid var(--bordure);
-            border-radius: 8px;
-            flex: 1;
-            min-width: 0;
-        }
-
-        /* EXPLORATION DES TOPICS */
-
-        details {
-            border: 1px solid var(--bordure);
-            border-radius: 8px;
-            margin-bottom: 10px;
-            padding: 14px;
-        }
-
-        details[open] {
-            border-color: #93c5fd;
-        }
-
-        summary {
-            cursor: pointer;
-            font-weight: bold;
-        }
-
-        .item {
-            padding: 12px 0;
-            border-bottom: 1px solid #f1f5f9;
-        }
-
-        .item:last-child {
-            border-bottom: none;
-        }
-
-        .item h4 {
-            margin: 6px 0;
-            color: var(--secondaire);
-        }
-
-        ul {
-            padding-left: 22px;
-        }
-
-        li {
-            margin: 8px 0;
-            overflow-wrap: anywhere;
-        }
-
-        a {
-            color: var(--bleu);
-            text-decoration: none;
-            overflow-wrap: anywhere;
-        }
-
-        a:hover {
-            text-decoration: underline;
-        }
-
-        /* GRAPHIQUE */
-
-        .barre-ligne {
-            margin: 16px 0;
-        }
-
-        .barre-info {
-            display: flex;
-            justify-content: space-between;
-            gap: 12px;
-            margin-bottom: 6px;
-            font-size: 14px;
-        }
-
-        .barre-fond {
-            background: #e8eef8;
-            height: 12px;
-            border-radius: 8px;
-            overflow: hidden;
-        }
-
-        .barre {
-            height: 100%;
-            background: var(--bleu);
-            border-radius: 8px;
-        }
-
-        /* NAVIGATION */
-
-        .navigation {
-            margin-top: 12px;
-            display: flex;
-            gap: 18px;
-        }
-
-        .navigation a {
-            color: white;
-            font-size: 14px;
-        }
-
-        /* PIED DE PAGE */
-
-        footer {
-            padding: 20px;
-            text-align: center;
-            color: var(--secondaire);
-            font-size: 13px;
-        }
-
-        /* RESPONSIVE */
-
-        @media (max-width: 700px) {
-            .statistiques {
-                grid-template-columns: repeat(2, 1fr);
-            }
-
-            .recherche {
-                flex-direction: column;
-            }
-
-            main {
-                padding: 0 12px;
-            }
-
-            .carte,
-            .section {
-                padding: 16px;
-            }
-        }
-
-        @media (max-width: 420px) {
-            .statistiques {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
-</head>
-
-<body>
-
-    <!-- EN-TÊTE -->
-
-    <header>
-        <h1>Pythonpédia</h1>
-
-        <p>
-            Tableau de bord de l'encyclopédie distribuée Python
+{% block title %}
+Vue d'ensemble — Pythonpédia
+{% endblock %}
+
+{% block page_title %}
+Vue d'ensemble
+{% endblock %}
+
+{% block page_subtitle %}
+Statistiques et activité de l'encyclopédie Python.
+{% endblock %}
+
+{% block content %}
+
+<!-- =====================================
+     STATISTIQUES
+     ===================================== -->
+
+<section class="stats-grid">
+
+    <div class="stat-card stat-purple">
+        <h3>Topics</h3>
+
+        <span class="value">
+            {{ statistiques.topics }}
+        </span>
+
+        <span class="description">
+            Thèmes disponibles
+        </span>
+    </div>
+
+    <div class="stat-card stat-orange">
+        <h3>Items</h3>
+
+        <span class="value">
+            {{ statistiques.nombre_items }}
+        </span>
+
+        <span class="description">
+            Catégories de références
+        </span>
+    </div>
+
+    <div class="stat-card stat-green">
+        <h3>URL uniques</h3>
+
+        <span class="value">
+            {{ statistiques.urls }}
+        </span>
+
+        <span class="description">
+            Ressources enregistrées
+        </span>
+    </div>
+
+    <div class="stat-card stat-blue">
+        <h3>Serveurs connus</h3>
+
+        <span class="value">
+            {{ statistiques.serveurs }}
+        </span>
+
+        <span class="description">
+            Adresses répertoriées
+        </span>
+    </div>
+
+</section>
+
+
+<!-- =====================================
+     GRAPHIQUE ET TOPICS
+     ===================================== -->
+
+<div class="content-grid">
+
+    <!-- GRAPHIQUE -->
+
+    <section class="panel">
+
+        <div class="section-heading">
+            <h2>Références par topic</h2>
+        </div>
+
+        <p class="panel-description">
+            Nombre d'URL distinctes disponibles
+            pour chaque thème Python.
         </p>
 
-        <nav class="navigation">
-            <a href="{{ url_for('tableau_de_bord') }}">
-                Tableau de bord
-            </a>
+        {% if statistiques_topics %}
 
-            <a href="{{ url_for('accueil') }}">
-                Documentation API
-            </a>
-        </nav>
-    </header>
-
-    <main>
-
-        <!-- STATISTIQUES -->
-
-        <section class="statistiques">
-
-            <div class="carte">
-                <span>Topics</span>
-                <strong>{{ statistiques.topics }}</strong>
-            </div>
-
-            <div class="carte">
-                <span>Items</span>
-                <strong>{{ statistiques.nombre_items }}</strong>
-            </div>
-
-            <div class="carte">
-                <span>URL uniques</span>
-                <strong>{{ statistiques.urls }}</strong>
-            </div>
-
-            <div class="carte">
-                <span>Adresses de serveurs</span>
-                <strong>{{ statistiques.serveurs }}</strong>
-            </div>
-
-        </section>
-
-
-        <!-- MESSAGES DE CONFIRMATION -->
-
-        {% with messages = get_flashed_messages() %}
-
-            {% if messages %}
-
-                <section class="section">
-
-                    {% for message in messages %}
-                        <p class="message">{{ message }}</p>
-                    {% endfor %}
-
-                </section>
-
-            {% endif %}
-
-        {% endwith %}
-
-
-        <!-- GESTION LOCALE UNIQUEMENT -->
-
-        {% if gestion_locale %}
-
-        <!-- AJOUT D'UNE RÉFÉRENCE -->
-
-        <section class="section">
-
-            <h2>Ajouter une référence</h2>
-
-            <p>
-                Ajouter une ressource dans l'encyclopédie.
-                Si le topic ou l'item n'existe pas,
-                il sera créé automatiquement.
-            </p>
-
-            <form
-                action="{{ url_for('ajouter_reference') }}"
-                method="POST"
-            >
-
-                <input
-                    type="hidden"
-                    name="csrf_token"
-                    value="{{ csrf_token }}"
-                >
-
-                <div class="champ">
-
-                    <label for="topic">Topic</label>
-
-                    <input
-                        type="text"
-                        id="topic"
-                        name="topic"
-                        placeholder="Exemple : fonctions"
-                        maxlength="100"
-                        required
-                    >
-
-                </div>
-
-                <div class="champ">
-
-                    <label for="item">Item</label>
-
-                    <input
-                        type="text"
-                        id="item"
-                        name="item"
-                        placeholder="Exemple : tutoriel"
-                        maxlength="100"
-                        required
-                    >
-
-                </div>
-
-                <div class="champ">
-
-                    <label for="url">URL de la référence</label>
-
-                    <input
-                        type="url"
-                        id="url"
-                        name="url"
-                        placeholder="https://docs.python.org/..."
-                        required
-                    >
-
-                </div>
-
-                <button type="submit">
-                    Ajouter la référence
-                </button>
-
-            </form>
-
-        </section>
-
-
-        <!-- SYNCHRONISATION -->
-
-        <section class="section">
-
-            <h2>Synchronisation des données</h2>
-
-            <p>
-                Récupérer les nouvelles références et
-                découvrir les serveurs connus par
-                les autres participants.
-            </p>
-
-            <p>
-                <strong>{{ statistiques.serveurs }}</strong>
-                adresses de serveurs enregistrées.
-            </p>
-
-            <form
-                action="{{ url_for('lancer_synchronisation') }}"
-                method="POST"
-            >
-
-                <input
-                    type="hidden"
-                    name="csrf_token"
-                    value="{{ csrf_token }}"
-                >
-
-                <button type="submit">
-                    Synchroniser maintenant
-                </button>
-
-            </form>
-
-        </section>
-
-        {% endif %}
-
-
-        <!-- RAPPORT DE SYNCHRONISATION -->
-
-        {% if gestion_locale and rapport_synchro %}
-
-        <section class="section">
-
-            <div class="rapport-synchro">
-
-                <h3>Dernière synchronisation</h3>
-
-                <p>
-                    Date : {{ rapport_synchro.date }}
-                </p>
-
-                {% if rapport_synchro.succes %}
-
-                    <p class="etat-succes">
-                        Script exécuté correctement.
-                    </p>
-
-                {% else %}
-
-                    <p class="etat-erreur">
-                        Une erreur est survenue.
-                    </p>
-
-                {% endif %}
-
-                <pre class="rapport-contenu">{{ rapport_synchro.message }}</pre>
-
-            </div>
-
-        </section>
-
-        {% endif %}
-
-
-        <!-- EXPLORATION DES TOPICS -->
-
-        <section class="section">
-
-            <h2>Explorer les topics</h2>
-
-            <form
-                class="recherche"
-                method="GET"
-                action="{{ url_for('tableau_de_bord') }}"
-            >
-
-                <input
-                    type="search"
-                    name="q"
-                    placeholder="Rechercher un topic..."
-                    value="{{ recherche }}"
-                >
-
-                <button type="submit">
-                    Rechercher
-                </button>
-
-            </form>
-
-            {% for nom, items in topics.items() %}
-
-                <details>
-
-                    <summary>
-                        {{ nom }} — {{ items|length }} items
-                    </summary>
-
-                    {% for item, urls in items.items() %}
-
-                        <div class="item">
-
-                            <h4>{{ item }}</h4>
-
-                            <ul>
-
-                                {% for url in urls %}
-
-                                <li>
-
-                                    {% if url.startswith('https://')
-                                       or url.startswith('http://') %}
-
-                                        <a
-                                            href="{{ url }}"
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                        >
-                                            {{ url }}
-                                        </a>
-
-                                    {% else %}
-
-                                        {{ url }}
-
-                                    {% endif %}
-
-                                </li>
-
-                                {% endfor %}
-
-                            </ul>
-
-                        </div>
-
-                    {% endfor %}
-
-                </details>
-
-            {% else %}
-
-                <p>Aucun topic trouvé.</p>
-
-            {% endfor %}
-
-        </section>
-
-
-        <!-- GRAPHIQUE DES RÉFÉRENCES -->
-
-        <section class="section">
-
-            <h2>Références par topic</h2>
-
-            <p>
-                Nombre d'URL distinctes présentes
-                dans chaque topic.
-            </p>
-
-            {% if statistiques_topics %}
-                {% set maximum = statistiques_topics[0].urls %}
-            {% else %}
-                {% set maximum = 0 %}
-            {% endif %}
+            {% set maximum = statistiques_topics[0].urls %}
 
             {% for topic in statistiques_topics %}
 
-                <div class="barre-ligne">
+                <div class="chart-row">
 
-                    <div class="barre-info">
+                    <div class="chart-label">
+
                         <span>{{ topic.nom }}</span>
-                        <span>{{ topic.urls }} URL</span>
-                    </div>
 
-                    <div class="barre-fond">
-
-                        {% if maximum > 0 %}
-                            {% set pourcentage = topic.urls / maximum * 100 %}
-                        {% else %}
-                            {% set pourcentage = 0 %}
-                        {% endif %}
-
-                        <div
-                            class="barre"
-                            style="width: {{ pourcentage }}%;"
-                        ></div>
+                        <span>
+                            {{ topic.urls }} URL
+                        </span>
 
                     </div>
+
+                    <progress
+                        class="chart-progress"
+                        value="{{ topic.urls }}"
+                        max="{{ maximum if maximum > 0 else 1 }}"
+                    >
+                        {{ topic.urls }}
+                    </progress>
 
                 </div>
 
             {% endfor %}
 
-        </section>
+        {% else %}
 
-
-        <!-- ANNUAIRE DES SERVEURS -->
-
-        <section class="section">
-
-            <h2>Annuaire des serveurs</h2>
-
-            <p>
-                Liste des adresses enregistrées
-                dans la base locale.
+            <p class="empty-state">
+                Aucune référence disponible.
             </p>
 
-            <ul>
+        {% endif %}
 
-                {% for serveur in serveurs %}
+    </section>
 
-                    <li>{{ serveur }}</li>
 
-                {% else %}
+    <!-- TOPICS DISPONIBLES -->
 
-                    <li>Aucun serveur enregistré.</li>
+    <section class="panel">
 
-                {% endfor %}
+        <div class="section-heading">
 
-            </ul>
+            <h2>Topics disponibles</h2>
 
-        </section>
+            <a
+                href="{{ url_for('page_references') }}"
+                class="btn btn-outline"
+            >
+                Explorer
+            </a>
 
-    </main>
+        </div>
 
-    <footer>
-        Pythonpédia — Encyclopédie distribuée sur Python
-    </footer>
+        <p class="panel-description">
+            Aperçu des thèmes présents dans la base locale.
+        </p>
 
-</body>
-</html>
+        <div class="topic-list">
+
+            {% for nom, items in topics.items() %}
+
+                <div class="topic-card">
+
+                    <strong>{{ nom }}</strong>
+
+                    <span>
+                        {{ items|length }} items
+                    </span>
+
+                </div>
+
+            {% else %}
+
+                <p class="empty-state">
+                    Aucun topic disponible.
+                </p>
+
+            {% endfor %}
+
+        </div>
+
+    </section>
+
+</div>
+
+
+<!-- =====================================
+     ACCÈS RAPIDES
+     ===================================== -->
+
+<section class="panel">
+
+    <h2>Accès rapides</h2>
+
+    <p class="panel-description">
+        Accéder aux principales fonctionnalités
+        de Pythonpédia.
+    </p>
+
+    <div class="quick-actions">
+
+        <a
+            href="{{ url_for('page_references') }}"
+            class="btn"
+        >
+            Explorer les références
+        </a>
+
+        <a
+            href="{{ url_for('page_serveurs') }}"
+            class="btn btn-orange"
+        >
+            Voir les serveurs
+        </a>
+
+        <a
+            href="{{ url_for('page_synchronisation') }}"
+            class="btn btn-green"
+        >
+            Synchronisation
+        </a>
+
+        <a
+            href="{{ url_for('accueil') }}"
+            class="btn btn-outline"
+        >
+            Documentation API
+        </a>
+
+    </div>
+
+</section>
+
+
+<!-- =====================================
+     GESTION LOCALE
+     ===================================== -->
+
+{% if gestion_locale %}
+
+<section class="content-grid">
+
+    <!-- AJOUT D'UNE RÉFÉRENCE -->
+
+    <div class="panel">
+
+        <h2>Ajouter une référence</h2>
+
+        <p class="panel-description">
+            Enregistrer une nouvelle ressource dans
+            l'encyclopédie.
+        </p>
+
+        <form
+            action="{{ url_for('ajouter_reference') }}"
+            method="POST"
+        >
+
+            <input
+                type="hidden"
+                name="csrf_token"
+                value="{{ csrf_token }}"
+            >
+
+            <div class="form-group">
+
+                <label for="topic">
+                    Topic
+                </label>
+
+                <input
+                    type="text"
+                    id="topic"
+                    name="topic"
+                    placeholder="Exemple : fonctions"
+                    maxlength="100"
+                    required
+                >
+
+            </div>
+
+            <div class="form-group">
+
+                <label for="item">
+                    Item
+                </label>
+
+                <input
+                    type="text"
+                    id="item"
+                    name="item"
+                    placeholder="Exemple : tutoriel"
+                    maxlength="100"
+                    required
+                >
+
+            </div>
+
+            <div class="form-group">
+
+                <label for="url">
+                    URL
+                </label>
+
+                <input
+                    type="url"
+                    id="url"
+                    name="url"
+                    placeholder="https://docs.python.org/..."
+                    required
+                >
+
+            </div>
+
+            <button
+                type="submit"
+                class="btn"
+            >
+                Ajouter la référence
+            </button>
+
+        </form>
+
+    </div>
+
+
+    <!-- SYNCHRONISATION -->
+
+    <div class="panel">
+
+        <h2>Synchronisation</h2>
+
+        <p class="panel-description">
+            Récupérer les références et les annuaires
+            des autres serveurs.
+        </p>
+
+        <form
+            action="{{ url_for('lancer_synchronisation') }}"
+            method="POST"
+        >
+
+            <input
+                type="hidden"
+                name="csrf_token"
+                value="{{ csrf_token }}"
+            >
+
+            <button
+                type="submit"
+                class="btn btn-green"
+            >
+                Synchroniser maintenant
+            </button>
+
+        </form>
+
+        {% if rapport_synchro %}
+
+            <h3>Dernière synchronisation</h3>
+
+            <p>
+                {{ rapport_synchro.date }}
+            </p>
+
+            {% if rapport_synchro.succes %}
+
+                <p class="status-success">
+                    Script exécuté correctement
+                </p>
+
+            {% else %}
+
+                <p class="status-error">
+                    Erreur pendant la synchronisation
+                </p>
+
+            {% endif %}
+
+            <pre class="report">{{ rapport_synchro.message }}</pre>
+
+        {% endif %}
+
+    </div>
+
+</section>
+
+{% endif %}
+
+{% endblock %}

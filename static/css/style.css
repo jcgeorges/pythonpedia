@@ -1,13 +1,34 @@
+/* ==========================================
+   PYTHONPÉDIA - STYLE GLOBAL
+   ========================================== */
+
 :root {
-    --primary: #2563eb;
-    --primary-dark: #1d4ed8;
-    --sidebar: #132238;
-    --background: #f4f7fb;
+    --primary: #6366f1;
+    --primary-dark: #4f46e5;
+
+    --purple: #8b5cf6;
+    --orange: #f59e0b;
+    --green: #10b981;
+    --blue: #3b82f6;
+    --coral: #f97373;
+
+    --sidebar: #172033;
+    --sidebar-hover: #26344c;
+
+    --background: #f5f7fb;
     --surface: #ffffff;
+
     --text: #1e293b;
     --muted: #64748b;
     --border: #e2e8f0;
+
+    --radius: 14px;
+    --shadow: 0 4px 18px rgba(15, 23, 42, 0.04);
 }
+
+/* ==========================================
+   CONFIGURATION GÉNÉRALE
+   ========================================== */
 
 * {
     box-sizing: border-box;
@@ -15,19 +36,39 @@
 
 body {
     margin: 0;
-    font-family: Arial, sans-serif;
+    font-family: Arial, Helvetica, sans-serif;
     background: var(--background);
     color: var(--text);
+    line-height: 1.5;
 }
 
-/* STRUCTURE */
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+button,
+input {
+    font: inherit;
+}
+
+/* ==========================================
+   STRUCTURE PRINCIPALE
+   ========================================== */
 
 .app-container {
     display: flex;
     min-height: 100vh;
 }
 
-/* BARRE LATÉRALE */
+.main-container {
+    flex: 1;
+    min-width: 0;
+}
+
+/* ==========================================
+   BARRE LATÉRALE
+   ========================================== */
 
 .sidebar {
     width: 250px;
@@ -40,22 +81,22 @@ body {
 
 .sidebar-header {
     padding: 28px 22px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .sidebar-header h2 {
     margin: 0;
-    font-size: 20px;
+    font-size: 21px;
 }
 
 .sidebar-header p {
-    margin-top: 8px;
-    font-size: 12px;
+    margin: 8px 0 0;
     color: #94a3b8;
+    font-size: 12px;
 }
 
 .sidebar-nav {
-    padding: 20px 12px;
+    padding: 22px 12px;
     display: flex;
     flex-direction: column;
     gap: 6px;
@@ -63,15 +104,14 @@ body {
 
 .sidebar-nav a {
     color: #cbd5e1;
-    text-decoration: none;
     padding: 13px 16px;
-    border-radius: 8px;
+    border-radius: 9px;
     font-size: 14px;
-    transition: 0.2s;
+    transition: background 0.2s, color 0.2s;
 }
 
 .sidebar-nav a:hover {
-    background: rgba(255, 255, 255, 0.08);
+    background: var(--sidebar-hover);
     color: white;
 }
 
@@ -84,7 +124,7 @@ body {
 .sidebar-footer {
     margin-top: auto;
     padding: 20px;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .sidebar-footer p {
@@ -93,26 +133,23 @@ body {
 }
 
 .sidebar-footer span {
-    font-size: 11px;
     color: #94a3b8;
+    font-size: 11px;
 }
 
-/* CONTENU PRINCIPAL */
-
-.main-container {
-    flex: 1;
-    min-width: 0;
-}
+/* ==========================================
+   EN-TÊTE
+   ========================================== */
 
 .topbar {
+    background: white;
     padding: 28px 35px;
-    background: var(--surface);
     border-bottom: 1px solid var(--border);
 }
 
 .topbar h1 {
     margin: 0;
-    font-size: 25px;
+    font-size: 26px;
 }
 
 .topbar p {
@@ -122,93 +159,383 @@ body {
 }
 
 .main-content {
-    padding: 30px 35px;
     max-width: 1500px;
     margin: auto;
+    padding: 30px 35px;
 }
 
-/* CARTES */
+/* ==========================================
+   CARTES STATISTIQUES
+   ========================================== */
 
 .stats-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 20px;
-    margin-bottom: 28px;
+    margin-bottom: 30px;
 }
 
 .stat-card {
-    background: var(--surface);
+    position: relative;
+    background: white;
     border: 1px solid var(--border);
-    border-radius: 12px;
+    border-radius: var(--radius);
     padding: 24px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.stat-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(15, 23, 42, 0.08);
 }
 
 .stat-card h3 {
     margin: 0;
-    color: var(--muted);
     font-size: 14px;
+    color: var(--muted);
     font-weight: 500;
 }
 
 .stat-card .value {
     display: block;
     margin-top: 14px;
-    font-size: 32px;
+    font-size: 34px;
     font-weight: 700;
-    color: var(--primary);
 }
 
-/* SECTIONS */
+.stat-card .description {
+    display: block;
+    margin-top: 10px;
+    font-size: 12px;
+    color: var(--muted);
+}
+
+.stat-card::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 5px;
+}
+
+.stat-purple::before {
+    background: var(--purple);
+}
+
+.stat-purple .value {
+    color: var(--purple);
+}
+
+.stat-orange::before {
+    background: var(--orange);
+}
+
+.stat-orange .value {
+    color: #b45309;
+}
+
+.stat-green::before {
+    background: var(--green);
+}
+
+.stat-green .value {
+    color: #059669;
+}
+
+.stat-blue::before {
+    background: var(--blue);
+}
+
+.stat-blue .value {
+    color: var(--blue);
+}
+
+/* ==========================================
+   SECTIONS ET PANNEAUX
+   ========================================== */
 
 .panel {
     background: var(--surface);
-    padding: 25px;
     border: 1px solid var(--border);
-    border-radius: 12px;
+    border-radius: var(--radius);
+    padding: 25px;
     margin-bottom: 24px;
+    box-shadow: var(--shadow);
 }
 
 .panel h2 {
-    margin-top: 0;
+    margin: 0 0 12px;
     font-size: 19px;
 }
 
-/* FORMULAIRES */
-
-input {
-    width: 100%;
-    padding: 12px;
-    border: 1px solid var(--border);
-    border-radius: 8px;
+.panel-description {
+    color: var(--muted);
     font-size: 14px;
+    margin-bottom: 22px;
 }
 
-button {
-    background: var(--primary);
-    color: white;
-    border: none;
-    border-radius: 8px;
-    padding: 12px 18px;
-    cursor: pointer;
-}
-
-button:hover {
-    background: var(--primary-dark);
-}
-
-.notification {
-    background: #dbeafe;
-    color: #1d4ed8;
-    padding: 14px;
-    border-radius: 8px;
+.section-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
     margin-bottom: 20px;
 }
 
-/* RESPONSIVE */
+.section-heading h2 {
+    margin: 0;
+}
 
-@media (max-width: 1000px) {
+/* ==========================================
+   GRILLE DE CONTENU
+   ========================================== */
+
+.content-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+    gap: 24px;
+}
+
+.content-grid > * {
+    min-width: 0;
+}
+
+/* ==========================================
+   GRAPHIQUES
+   ========================================== */
+
+.chart-row {
+    margin-bottom: 19px;
+}
+
+.chart-label {
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
+    margin-bottom: 8px;
+    font-size: 14px;
+}
+
+.chart-label span:last-child {
+    color: var(--muted);
+}
+
+.chart-progress {
+    display: block;
+    width: 100%;
+    height: 11px;
+    border: none;
+    border-radius: 8px;
+    overflow: hidden;
+    appearance: none;
+}
+
+.chart-progress::-webkit-progress-bar {
+    background: #edf0f7;
+    border-radius: 8px;
+}
+
+.chart-progress::-webkit-progress-value {
+    background: var(--purple);
+    border-radius: 8px;
+}
+
+.chart-progress::-moz-progress-bar {
+    background: var(--purple);
+    border-radius: 8px;
+}
+
+.chart-row:nth-child(4n+2) .chart-progress::-webkit-progress-value {
+    background: var(--green);
+}
+
+.chart-row:nth-child(4n+3) .chart-progress::-webkit-progress-value {
+    background: var(--orange);
+}
+
+.chart-row:nth-child(4n+4) .chart-progress::-webkit-progress-value {
+    background: var(--blue);
+}
+
+.chart-row:nth-child(4n+2) .chart-progress::-moz-progress-bar {
+    background: var(--green);
+}
+
+.chart-row:nth-child(4n+3) .chart-progress::-moz-progress-bar {
+    background: var(--orange);
+}
+
+.chart-row:nth-child(4n+4) .chart-progress::-moz-progress-bar {
+    background: var(--blue);
+}
+
+/* ==========================================
+   TOPICS
+   ========================================== */
+
+.topic-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.topic-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    padding: 15px;
+    background: #f8fafc;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+}
+
+.topic-card strong {
+    font-size: 14px;
+    overflow-wrap: anywhere;
+}
+
+.topic-card span {
+    color: var(--muted);
+    font-size: 12px;
+    white-space: nowrap;
+}
+
+.topic-card:hover {
+    border-color: #c4b5fd;
+    background: #faf8ff;
+}
+
+/* ==========================================
+   BOUTONS ET FORMULAIRES
+   ========================================== */
+
+.btn {
+    display: inline-block;
+    background: var(--primary);
+    color: white;
+    padding: 11px 17px;
+    border: none;
+    border-radius: 9px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.btn:hover {
+    background: var(--primary-dark);
+}
+
+.btn-green {
+    background: #059669;
+}
+
+.btn-green:hover {
+    background: #047857;
+}
+
+.btn-orange {
+    background: #d97706;
+}
+
+.btn-orange:hover {
+    background: #b45309;
+}
+
+.btn-outline {
+    background: white;
+    border: 1px solid var(--border);
+    color: var(--text);
+}
+
+.btn-outline:hover {
+    background: #f1f5f9;
+}
+
+.quick-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.form-group {
+    margin-bottom: 16px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 7px;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 11px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+}
+
+.form-group input:focus {
+    outline: 2px solid #c4b5fd;
+    border-color: var(--primary);
+}
+
+/* ==========================================
+   NOTIFICATIONS ET RAPPORTS
+   ========================================== */
+
+.notification {
+    background: #ecfdf5;
+    color: #047857;
+    padding: 14px 16px;
+    border: 1px solid #a7f3d0;
+    border-radius: 9px;
+    margin-bottom: 20px;
+}
+
+.report {
+    margin-top: 18px;
+    background: #172033;
+    color: #e2e8f0;
+    padding: 17px;
+    border-radius: 10px;
+    max-height: 320px;
+    overflow: auto;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    font-size: 12px;
+}
+
+.status-success {
+    color: #059669;
+    font-weight: 600;
+}
+
+.status-error {
+    color: #dc2626;
+    font-weight: 600;
+}
+
+.empty-state {
+    color: var(--muted);
+    font-size: 14px;
+}
+
+/* ==========================================
+   ADAPTATION AUX ÉCRANS
+   ========================================== */
+
+@media (max-width: 1100px) {
     .stats-grid {
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .content-grid {
+        grid-template-columns: 1fr;
     }
 }
 
@@ -233,5 +560,10 @@ button:hover {
 
     .stats-grid {
         grid-template-columns: 1fr;
+    }
+
+    .section-heading {
+        flex-direction: column;
+        align-items: flex-start;
     }
 }
