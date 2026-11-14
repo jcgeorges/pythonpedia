@@ -6,3 +6,4 @@ __pycache__/
 *_backup.py
 data/*backup*.json
 demo/
+data/topics_sauvegarde_references.json

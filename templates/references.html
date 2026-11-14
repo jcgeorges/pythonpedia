@@ -1,21 +1,317 @@
 {% extends "base.html" %}
 
-{% block title %}Références — Pythonpédia{% endblock %}
+{% block title %}
+Références — Pythonpédia
+{% endblock %}
 
-{% block page_title %}Références{% endblock %}
+{% block page_title %}
+Gestion des références
+{% endblock %}
 
 {% block page_subtitle %}
-Consulter et gérer les références Python.
+Consulter et organiser les ressources de l'encyclopédie.
 {% endblock %}
 
 {% block content %}
 
+<!-- STATISTIQUES -->
+
+<section class="stats-grid">
+
+    <div class="stat-card stat-purple">
+
+        <h3>Topics disponibles</h3>
+
+        <span class="value">
+            {{ topics|length }}
+        </span>
+
+    </div>
+
+    <div class="stat-card stat-green">
+
+        <h3>Références affichées</h3>
+
+        <span class="value">
+            {{ nombre_references }}
+        </span>
+
+    </div>
+
+</section>
+
+
+<!-- RECHERCHE -->
+
 <section class="panel">
-    <h2>Gestion des références</h2>
-    <p>
-        La recherche et la gestion des références
-        seront intégrées dans cette section.
+
+    <h2>Rechercher une référence</h2>
+
+    <p class="panel-description">
+        Rechercher par topic, catégorie ou URL.
     </p>
+
+    <form
+        method="GET"
+        action="{{ url_for('page_references') }}"
+        class="recherche-references"
+    >
+
+        <input
+            type="search"
+            name="q"
+            placeholder="Rechercher : fonctions, tutoriel, python.org..."
+            value="{{ recherche }}"
+        >
+
+        <button type="submit" class="btn">
+            Rechercher
+        </button>
+
+        <a
+            href="{{ url_for('page_references') }}"
+            class="btn btn-outline"
+        >
+            Réinitialiser
+        </a>
+
+    </form>
+
+</section>
+
+
+<!-- AJOUT D'UNE RÉFÉRENCE -->
+
+{% if gestion_locale %}
+
+<section class="panel">
+
+    <h2>Ajouter une référence</h2>
+
+    <p class="panel-description">
+        Ajouter une ressource à un topic existant ou créer
+        un nouveau topic.
+    </p>
+
+    <form
+        action="{{ url_for('ajouter_reference') }}"
+        method="POST"
+    >
+
+        <input
+            type="hidden"
+            name="csrf_token"
+            value="{{ csrf_token }}"
+        >
+
+        <div class="form-group">
+
+            <label for="topic">
+                Topic
+            </label>
+
+            <input
+                type="text"
+                id="topic"
+                name="topic"
+                list="topics-existants"
+                placeholder="Sélectionner ou saisir un topic"
+                maxlength="100"
+                required
+            >
+
+            <datalist id="topics-existants">
+
+                {% for topic in topics %}
+                    <option value="{{ topic }}">
+                {% endfor %}
+
+            </datalist>
+
+        </div>
+
+        <div class="form-group">
+
+            <label for="item">
+                Catégorie (item)
+            </label>
+
+            <input
+                type="text"
+                id="item"
+                name="item"
+                placeholder="Définition, tutoriel, exemple..."
+                maxlength="100"
+                required
+            >
+
+        </div>
+
+        <div class="form-group">
+
+            <label for="url">
+                URL
+            </label>
+
+            <input
+                type="url"
+                id="url"
+                name="url"
+                placeholder="https://..."
+                maxlength="2048"
+                required
+            >
+
+        </div>
+
+        <button type="submit" class="btn btn-green">
+            Ajouter la référence
+        </button>
+
+    </form>
+
+</section>
+
+{% endif %}
+
+
+<!-- TABLEAU DES RÉFÉRENCES -->
+
+<section class="panel">
+
+    <div class="section-heading">
+
+        <h2>Catalogue des références</h2>
+
+        <span class="badge badge-purple">
+            {{ nombre_references }} résultats
+        </span>
+
+    </div>
+
+    <div class="table-container">
+
+        <table class="references-table">
+
+            <thead>
+                <tr>
+                    <th>Topic</th>
+                    <th>Item</th>
+                    <th>Référence</th>
+
+                    {% if gestion_locale %}
+                        <th>Actions</th>
+                    {% endif %}
+                </tr>
+            </thead>
+
+            <tbody>
+
+                {% for reference in references %}
+
+                <tr>
+
+                    <td>
+                        <span class="badge badge-purple">
+                            {{ reference.topic }}
+                        </span>
+                    </td>
+
+                    <td>
+                        <span class="badge badge-orange">
+                            {{ reference.item }}
+                        </span>
+                    </td>
+
+                    <td class="url-cell">
+
+                        {% if reference.url.startswith('https://')
+                           or reference.url.startswith('http://') %}
+
+                            <a
+                                href="{{ reference.url }}"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                            >
+                                {{ reference.url }}
+                            </a>
+
+                        {% else %}
+
+                            {{ reference.url }}
+
+                        {% endif %}
+
+                    </td>
+
+                    {% if gestion_locale %}
+
+                    <td>
+
+                        <form
+                            action="{{ url_for('supprimer_reference') }}"
+                            method="POST"
+                            onsubmit="return confirm('Supprimer cette référence ?');"
+                        >
+
+                            <input
+                                type="hidden"
+                                name="csrf_token"
+                                value="{{ csrf_token }}"
+                            >
+
+                            <input
+                                type="hidden"
+                                name="topic"
+                                value="{{ reference.topic }}"
+                            >
+
+                            <input
+                                type="hidden"
+                                name="item"
+                                value="{{ reference.item }}"
+                            >
+
+                            <input
+                                type="hidden"
+                                name="url"
+                                value="{{ reference.url }}"
+                            >
+
+                            <button
+                                type="submit"
+                                class="btn btn-danger"
+                            >
+                                Supprimer
+                            </button>
+
+                        </form>
+
+                    </td>
+
+                    {% endif %}
+
+                </tr>
+
+                {% else %}
+
+                <tr>
+                    <td
+                        colspan="{{ 4 if gestion_locale else 3 }}"
+                        class="empty-state"
+                    >
+                        Aucune référence trouvée.
+                    </td>
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
 </section>
 
 {% endblock %}

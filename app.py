@@ -217,11 +217,11 @@ def ajouter_reference():
         or not url_valide
     ):
         flash("Informations invalides.")
-        return redirect(url_for("tableau_de_bord"))
+        return redirect(url_for("page_references"))
 
     if not verrou_donnees.acquire(blocking=False):
         flash("Une opération est déjà en cours.")
-        return redirect(url_for("tableau_de_bord"))
+        return redirect(url_for("page_references"))
 
     try:
         topics = lire_json(FICHIER_TOPICS)
@@ -244,7 +244,7 @@ def ajouter_reference():
     finally:
         verrou_donnees.release()
 
-    return redirect(url_for("tableau_de_bord"))
+    return redirect(url_for("page_references"))
 
 
 # ------------------------------------------
@@ -321,7 +321,51 @@ def lancer_synchronisation():
 
 @app.route("/dashboard/references", methods=["GET"])
 def page_references():
-    return render_template("references.html")
+
+    # Charger les références
+    topics = lire_json(FICHIER_TOPICS)
+
+    # Récupérer la recherche
+    recherche = request.args.get("q", "").strip().lower()
+
+    references = []
+
+    # Parcourir les topics et les items
+    for topic, items in topics.items():
+
+        for item, urls in items.items():
+
+            for url in urls:
+
+                # Vérifier si la référence correspond à la recherche
+                if (
+                    recherche in topic.lower()
+                    or recherche in item.lower()
+                    or recherche in url.lower()
+                ):
+
+                    references.append({
+                        "topic": topic,
+                        "item": item,
+                        "url": url
+                    })
+
+    # Trier les références
+    references.sort(
+        key=lambda x: (
+            x["topic"].lower(),
+            x["item"].lower(),
+            x["url"]
+        )
+    )
+
+    return render_template(
+        "references.html",
+        references=references,
+        topics=topics,
+        recherche=recherche,
+        nombre_references=len(references)
+    )
 
 
 @app.route("/dashboard/serveurs", methods=["GET"])
@@ -332,6 +376,51 @@ def page_serveurs():
 @app.route("/dashboard/synchronisation", methods=["GET"])
 def page_synchronisation():
     return render_template("synchronisation.html")
+
+
+@app.route("/supprimer-reference", methods=["POST"])
+def supprimer_reference():
+
+    # Vérifier que l'utilisateur peut modifier les données
+    verifier_modification()
+
+    # Récupérer les informations
+    topic = request.form.get("topic", "")
+    item = request.form.get("item", "")
+    url = request.form.get("url", "")
+
+    # Empêcher la suppression pendant une synchronisation
+    if not verrou_donnees.acquire(blocking=False):
+        flash("Une opération est déjà en cours.")
+        return redirect(url_for("page_references"))
+
+    try:
+
+        # Charger les données
+        topics = lire_json(FICHIER_TOPICS)
+
+        # Vérifier que la référence existe
+        if (
+            topic in topics
+            and item in topics[topic]
+            and url in topics[topic][item]
+        ):
+
+            # Supprimer uniquement l'URL demandée
+            topics[topic][item].remove(url)
+
+            # Enregistrer la base mise à jour
+            enregistrer_json(FICHIER_TOPICS, topics)
+
+            flash("Référence supprimée avec succès.")
+
+        else:
+            flash("Référence introuvable.")
+
+    finally:
+        verrou_donnees.release()
+
+    return redirect(url_for("page_references"))
 
 # ------------------------------------------
 # DÉMARRAGE UNIQUE
