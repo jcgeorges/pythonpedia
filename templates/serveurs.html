@@ -1,21 +1,359 @@
 {% extends "base.html" %}
 
-{% block title %}Serveurs — Pythonpédia{% endblock %}
+{% block title %}
+Serveurs — Pythonpédia
+{% endblock %}
 
-{% block page_title %}Serveurs{% endblock %}
+{% block page_title %}
+Gestion des serveurs
+{% endblock %}
 
 {% block page_subtitle %}
-Consulter les serveurs participant à Pythonpédia.
+Consulter et administrer l'annuaire des serveurs Pythonpédia.
 {% endblock %}
 
 {% block content %}
 
+<!-- ==========================================
+     STATISTIQUES
+     ========================================== -->
+
+<section class="stats-grid">
+
+    <div class="stat-card stat-purple">
+
+        <h3>Serveurs connus</h3>
+
+        <span class="value">
+            {{ nombre_serveurs }}
+        </span>
+
+        <span class="description">
+            Adresses enregistrées
+        </span>
+
+    </div>
+
+    <div class="stat-card stat-green">
+
+        <h3>Accessibles</h3>
+
+        <span class="value">
+            {{ nombre_accessibles }}
+        </span>
+
+        <span class="description">
+            Serveurs ayant répondu
+        </span>
+
+    </div>
+
+    <div class="stat-card stat-red">
+
+        <h3>Inaccessibles</h3>
+
+        <span class="value">
+            {{ nombre_inaccessibles }}
+        </span>
+
+        <span class="description">
+            Échecs de vérification
+        </span>
+
+    </div>
+
+    <div class="stat-card stat-orange">
+
+        <h3>Non vérifiés</h3>
+
+        <span class="value">
+            {{ nombre_non_verifies }}
+        </span>
+
+        <span class="description">
+            Statut non déterminé
+        </span>
+
+    </div>
+
+</section>
+
+
+<!-- ==========================================
+     VÉRIFICATION
+     ========================================== -->
+
 <section class="panel">
-    <h2>Annuaire des serveurs</h2>
-    <p>
-        La liste des serveurs et leur état
-        seront affichés ici.
+
+    <div class="section-heading">
+
+        <div>
+            <h2>Disponibilité des serveurs</h2>
+
+            <p class="panel-description">
+                Vérifier la réponse des API enregistrées dans l'annuaire.
+            </p>
+        </div>
+
+        {% if gestion_locale %}
+
+        <form
+            action="{{ url_for('action_serveurs') }}"
+            method="POST"
+        >
+
+            <input
+                type="hidden"
+                name="csrf_token"
+                value="{{ csrf_token_serveurs }}"
+            >
+
+            <input
+                type="hidden"
+                name="action"
+                value="verifier"
+            >
+
+            <button
+                type="submit"
+                class="btn btn-green"
+            >
+                Vérifier les serveurs
+            </button>
+
+        </form>
+
+        {% endif %}
+
+    </div>
+
+    <div class="server-legend">
+
+        <span>
+            <i class="status-dot dot-green"></i>
+            Accessible
+        </span>
+
+        <span>
+            <i class="status-dot dot-red"></i>
+            Inaccessible
+        </span>
+
+        <span>
+            <i class="status-dot dot-orange"></i>
+            Non vérifié
+        </span>
+
+    </div>
+
+</section>
+
+
+<!-- ==========================================
+     AJOUT D'UN SERVEUR
+     ========================================== -->
+
+{% if gestion_locale %}
+
+<section class="panel">
+
+    <h2>Ajouter un serveur</h2>
+
+    <p class="panel-description">
+        Enregistrer l'adresse d'un serveur Pythonpédia.
     </p>
+
+    <form
+        action="{{ url_for('action_serveurs') }}"
+        method="POST"
+        class="server-form"
+    >
+
+        <input
+            type="hidden"
+            name="csrf_token"
+            value="{{ csrf_token_serveurs }}"
+        >
+
+        <input
+            type="hidden"
+            name="action"
+            value="ajouter"
+        >
+
+        <input
+            type="url"
+            name="adresse"
+            placeholder="http://127.0.0.1:5001"
+            required
+        >
+
+        <button
+            type="submit"
+            class="btn"
+        >
+            Ajouter
+        </button>
+
+    </form>
+
+</section>
+
+{% endif %}
+
+
+<!-- ==========================================
+     ANNUAIRE
+     ========================================== -->
+
+<section class="panel">
+
+    <div class="section-heading">
+
+        <h2>Annuaire des serveurs</h2>
+
+        <span class="badge badge-purple">
+            {{ nombre_serveurs }} serveurs
+        </span>
+
+    </div>
+
+    <div class="table-container">
+
+        <table class="references-table">
+
+            <thead>
+
+                <tr>
+                    <th>Adresse</th>
+                    <th>Statut</th>
+                    <th>API</th>
+
+                    {% if gestion_locale %}
+                    <th>Actions</th>
+                    {% endif %}
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                {% for serveur in serveurs %}
+
+                <tr>
+
+                    <td class="url-cell">
+
+                        <strong>
+                            {{ serveur.adresse }}
+                        </strong>
+
+                    </td>
+
+                    <td>
+
+                        {% if serveur.statut == "accessible" %}
+
+                            <span class="server-status status-online">
+                                <i class="status-dot dot-green"></i>
+                                Accessible
+                            </span>
+
+                        {% elif serveur.statut == "inaccessible" %}
+
+                            <span class="server-status status-offline">
+                                <i class="status-dot dot-red"></i>
+                                Inaccessible
+                            </span>
+
+                        {% else %}
+
+                            <span class="server-status status-unknown">
+                                <i class="status-dot dot-orange"></i>
+                                Non vérifié
+                            </span>
+
+                        {% endif %}
+
+                    </td>
+
+                    <td>
+
+                        <a
+                            href="{{ serveur.adresse }}/ws/topics"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="api-link"
+                        >
+                            /ws/topics ↗
+                        </a>
+
+                    </td>
+
+                    {% if gestion_locale %}
+
+                    <td>
+
+                        <form
+                            action="{{ url_for('action_serveurs') }}"
+                            method="POST"
+                            onsubmit="return confirm('Supprimer ce serveur de l’annuaire ?');"
+                        >
+
+                            <input
+                                type="hidden"
+                                name="csrf_token"
+                                value="{{ csrf_token_serveurs }}"
+                            >
+
+                            <input
+                                type="hidden"
+                                name="action"
+                                value="supprimer"
+                            >
+
+                            <input
+                                type="hidden"
+                                name="adresse"
+                                value="{{ serveur.adresse }}"
+                            >
+
+                            <button
+                                type="submit"
+                                class="btn btn-danger"
+                            >
+                                Supprimer
+                            </button>
+
+                        </form>
+
+                    </td>
+
+                    {% endif %}
+
+                </tr>
+
+                {% else %}
+
+                <tr>
+
+                    <td
+                        colspan="{{ 4 if gestion_locale else 3 }}"
+                        class="empty-state"
+                    >
+                        Aucun serveur enregistré.
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
 </section>
 
 {% endblock %}

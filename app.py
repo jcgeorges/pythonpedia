@@ -30,6 +30,8 @@ from flask import (
 # CONFIGURATION
 # ------------------------------------------
 
+verrou_serveurs = threading.Lock()
+
 app = Flask(__name__)
 app.secret_key = secrets.token_hex(32)
 
@@ -75,6 +77,90 @@ def verifier_modification():
         session.get("csrf_token", "")
     ):
         abort(403)
+
+
+
+
+def gestion_serveurs_locale():
+    """
+    Autoriser la gestion uniquement depuis la machine locale.
+    """
+    return request.remote_addr in ("127.0.0.1", "::1")
+
+
+def obtenir_csrf_serveurs():
+    """
+    Créer un jeton CSRF propre à la gestion des serveurs.
+    """
+    if "csrf_serveurs" not in session:
+        session["csrf_serveurs"] = secrets.token_hex(32)
+
+    return session["csrf_serveurs"]
+
+
+def proteger_gestion_serveurs():
+    """
+    Vérifier l'origine locale et le jeton CSRF.
+    """
+    if not gestion_serveurs_locale():
+        abort(403)
+
+    jeton_attendu = session.get("csrf_serveurs")
+    jeton_recu = request.form.get("csrf_token", "")
+
+    if (
+        not jeton_attendu
+        or not hmac.compare_digest(
+            jeton_attendu,
+            jeton_recu
+        )
+    ):
+        abort(403)
+
+
+def normaliser_adresse_serveur(adresse):
+    """
+    Vérifier et normaliser l'adresse d'un serveur HTTP.
+    """
+    adresse = adresse.strip().rstrip("/")
+
+    if not adresse:
+        raise ValueError("L'adresse est vide.")
+
+    try:
+        parsed = urlsplit(adresse)
+
+        if parsed.scheme not in ("http", "https"):
+            raise ValueError(
+                "L'adresse doit commencer par http:// ou https://."
+            )
+
+        if not parsed.hostname:
+            raise ValueError("Nom d'hôte invalide.")
+
+        if parsed.username or parsed.password:
+            raise ValueError(
+                "Les identifiants dans l'URL ne sont pas autorisés."
+            )
+
+        if parsed.path or parsed.query or parsed.fragment:
+            raise ValueError(
+                "Indique uniquement l'adresse du serveur, sans chemin."
+            )
+
+        # Vérifie également que le port éventuel est valide.
+        port = parsed.port
+
+        if port is not None and port <= 0:
+            raise ValueError("Port invalide.")
+
+    except ValueError as erreur:
+        raise ValueError(
+            f"Adresse invalide : {erreur}"
+        ) from erreur
+
+    return adresse
+
 
 
 # ------------------------------------------
@@ -370,7 +456,56 @@ def page_references():
 
 @app.route("/dashboard/serveurs", methods=["GET"])
 def page_serveurs():
-    return render_template("serveurs.html")
+
+    # Charger l'annuaire
+    serveurs = lire_json(FICHIER_SERVEURS)
+
+    # Récupérer les résultats des dernières vérifications
+    statuts = session.get("statuts_serveurs", {})
+
+    liste_serveurs = []
+
+    for adresse in serveurs:
+
+        statut = statuts.get(adresse, "non_verifie")
+
+        liste_serveurs.append({
+            "adresse": adresse,
+            "statut": statut
+        })
+
+    # Statistiques
+    nombre_serveurs = len(liste_serveurs)
+
+    nombre_accessibles = sum(
+        serveur["statut"] == "accessible"
+        for serveur in liste_serveurs
+    )
+
+    nombre_inaccessibles = sum(
+        serveur["statut"] == "inaccessible"
+        for serveur in liste_serveurs
+    )
+
+    nombre_non_verifies = sum(
+        serveur["statut"] == "non_verifie"
+        for serveur in liste_serveurs
+    )
+
+    return render_template(
+        "serveurs.html",
+        serveurs=liste_serveurs,
+        nombre_serveurs=nombre_serveurs,
+        nombre_accessibles=nombre_accessibles,
+        nombre_inaccessibles=nombre_inaccessibles,
+        nombre_non_verifies=nombre_non_verifies,
+        gestion_locale=gestion_serveurs_locale(),
+        csrf_token_serveurs=(
+            obtenir_csrf_serveurs()
+            if gestion_serveurs_locale()
+            else None
+        )
+    )
 
 
 @app.route("/dashboard/synchronisation", methods=["GET"])
@@ -421,6 +556,145 @@ def supprimer_reference():
         verrou_donnees.release()
 
     return redirect(url_for("page_references"))
+
+
+
+
+@app.route("/dashboard/serveurs/action", methods=["POST"])
+def action_serveurs():
+
+    # Vérifier les autorisations
+    proteger_gestion_serveurs()
+
+    action = request.form.get("action", "")
+
+    # =========================================
+    # AJOUTER UN SERVEUR
+    # =========================================
+
+    if action == "ajouter":
+
+        try:
+            adresse = normaliser_adresse_serveur(
+                request.form.get("adresse", "")
+            )
+
+        except ValueError as erreur:
+            flash(str(erreur))
+
+            return redirect(
+                url_for("page_serveurs")
+            )
+
+        with verrou_serveurs:
+
+            serveurs = lire_json(FICHIER_SERVEURS)
+
+            if adresse in serveurs:
+                flash("Ce serveur existe déjà.")
+
+            else:
+                serveurs.append(adresse)
+
+                enregistrer_json(
+                    FICHIER_SERVEURS,
+                    serveurs
+                )
+
+                flash("Serveur ajouté avec succès.")
+
+    # =========================================
+    # SUPPRIMER UN SERVEUR
+    # =========================================
+
+    elif action == "supprimer":
+
+        adresse = request.form.get("adresse", "")
+
+        with verrou_serveurs:
+
+            serveurs = lire_json(FICHIER_SERVEURS)
+
+            if adresse in serveurs:
+
+                serveurs.remove(adresse)
+
+                enregistrer_json(
+                    FICHIER_SERVEURS,
+                    serveurs
+                )
+
+                # Supprimer l'ancien statut
+                statuts = session.get(
+                    "statuts_serveurs",
+                    {}
+                )
+
+                statuts.pop(adresse, None)
+
+                session["statuts_serveurs"] = statuts
+
+                flash("Serveur supprimé avec succès.")
+
+            else:
+                flash("Serveur introuvable.")
+
+    # =========================================
+    # VÉRIFIER LES SERVEURS
+    # =========================================
+
+    elif action == "verifier":
+
+        serveurs = lire_json(FICHIER_SERVEURS)
+
+        statuts = {}
+
+        for adresse in serveurs:
+
+            try:
+
+                reponse = requests.get(
+                    f"{adresse}/ws/topics",
+                    timeout=2,
+                    allow_redirects=False
+                )
+
+                if (
+                    reponse.status_code == 200
+                    and isinstance(reponse.json(), list)
+                ):
+
+                    statuts[adresse] = "accessible"
+
+                else:
+                    statuts[adresse] = "inaccessible"
+
+            except (
+                requests.exceptions.RequestException,
+                ValueError
+            ):
+
+                statuts[adresse] = "inaccessible"
+
+        session["statuts_serveurs"] = statuts
+
+        accessibles = sum(
+            statut == "accessible"
+            for statut in statuts.values()
+        )
+
+        flash(
+            f"Vérification terminée : "
+            f"{accessibles}/{len(serveurs)} "
+            f"serveurs accessibles."
+        )
+
+    else:
+        abort(400)
+
+    return redirect(
+        url_for("page_serveurs")
+    )
 
 # ------------------------------------------
 # DÉMARRAGE UNIQUE
