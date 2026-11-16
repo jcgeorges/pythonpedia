@@ -125,6 +125,11 @@ def preparer_demo():
             dossier / "templates"
         )
 
+        shutil.copytree(
+            BASE_DIR / "static",
+            dossier / "static"
+        )
+
         # Créer une base indépendante
         data_dir = dossier / "data"
         data_dir.mkdir()
