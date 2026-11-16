@@ -14,6 +14,33 @@ from services.database import (
     FICHIER_SERVEURS
 )
 
+import hmac
+import secrets
+import subprocess
+import sys
+import threading
+
+from flask import (
+    abort,
+    flash,
+    redirect,
+    render_template,
+    request,
+    session,
+    url_for
+)
+
+from services.database import (
+    lire_json,
+    FICHIER_TOPICS,
+    FICHIER_SERVEURS
+)
+
+from services.historique import (
+    charger_historique,
+    ajouter_historique
+)
+
 from flask import (
     Flask,
     jsonify,
@@ -29,7 +56,7 @@ from flask import (
 # ------------------------------------------
 # CONFIGURATION
 # ------------------------------------------
-
+verrou_synchronisation = threading.Lock()
 verrou_serveurs = threading.Lock()
 
 app = Flask(__name__)
@@ -160,6 +187,41 @@ def normaliser_adresse_serveur(adresse):
         ) from erreur
 
     return adresse
+
+
+
+# ==================================================
+# FONCTIONS DE COMPTAGE
+# ==================================================
+
+def ensemble_references(topics):
+    """
+    Construire l'ensemble des références distinctes.
+    """
+
+    references = set()
+
+    for topic, items in topics.items():
+        for item, urls in items.items():
+            for url in urls:
+                references.add((topic, item, url))
+
+    return references
+
+
+def etat_base():
+    """
+    Récupérer un instantané des références
+    et des serveurs enregistrés.
+    """
+
+    topics = lire_json(FICHIER_TOPICS)
+    serveurs = lire_json(FICHIER_SERVEURS)
+
+    return (
+        ensemble_references(topics),
+        set(serveurs)
+    )
 
 
 
@@ -508,9 +570,188 @@ def page_serveurs():
     )
 
 
-@app.route("/dashboard/synchronisation", methods=["GET"])
+@app.route(
+    "/dashboard/synchronisation",
+    methods=["GET", "POST"]
+)
 def page_synchronisation():
-    return render_template("synchronisation.html")
+
+    # =====================================
+    # PROTECTION DE L'INTERFACE
+    # =====================================
+
+    gestion_locale = request.remote_addr in (
+        "127.0.0.1",
+        "::1"
+    )
+
+    # Créer un jeton CSRF pour cette page
+    if gestion_locale and "csrf_synchronisation" not in session:
+
+        session["csrf_synchronisation"] = (
+            secrets.token_hex(32)
+        )
+
+    # =====================================
+    # LANCEMENT DE LA SYNCHRONISATION
+    # =====================================
+
+    if request.method == "POST":
+
+        # Interdire les modifications distantes
+        if not gestion_locale:
+            abort(403)
+
+        # Vérifier le jeton CSRF
+        jeton_attendu = session.get(
+            "csrf_synchronisation"
+        )
+
+        jeton_recu = request.form.get(
+            "csrf_token",
+            ""
+        )
+
+        if (
+            not jeton_attendu
+            or not hmac.compare_digest(
+                jeton_attendu,
+                jeton_recu
+            )
+        ):
+            abort(403)
+
+        # Empêcher deux exécutions simultanées
+        if not verrou_synchronisation.acquire(
+            blocking=False
+        ):
+            flash(
+                "Une synchronisation est déjà en cours."
+            )
+
+            return redirect(
+                url_for("page_synchronisation")
+            )
+
+        try:
+
+            succes = False
+            nouvelles_urls = None
+            nouveaux_serveurs = None
+            message = ""
+
+            try:
+
+                # État de la base avant synchronisation
+                references_avant, serveurs_avant = etat_base()
+
+                # Exécuter le script existant
+                resultat = subprocess.run(
+                    [
+                        sys.executable,
+                        "-m",
+                        "services.synchronisation"
+                    ],
+                    cwd=BASE_DIR,
+                    capture_output=True,
+                    text=True,
+                    timeout=90,
+                    check=False
+                )
+
+                # Récupérer le rapport
+                message = (
+                    (resultat.stdout or "")
+                    + "\n"
+                    + (resultat.stderr or "")
+                ).strip()
+
+                succes = resultat.returncode == 0
+
+                # État de la base après synchronisation
+                references_apres, serveurs_apres = etat_base()
+
+                nouvelles_urls = len(
+                    references_apres - references_avant
+                )
+
+                nouveaux_serveurs = len(
+                    serveurs_apres - serveurs_avant
+                )
+
+                if not message:
+                    message = (
+                        "Synchronisation terminée sans "
+                        "message supplémentaire."
+                    )
+
+            except subprocess.TimeoutExpired:
+
+                message = (
+                    "La synchronisation a dépassé "
+                    "le délai autorisé de 90 secondes."
+                )
+
+            except Exception as erreur:
+
+                message = (
+                    f"Erreur pendant la synchronisation : "
+                    f"{erreur}"
+                )
+
+            # Enregistrer le résultat
+            ajouter_historique(
+                succes=succes,
+                nouvelles_urls=nouvelles_urls,
+                nouveaux_serveurs=nouveaux_serveurs,
+                message=message
+            )
+
+            if succes:
+
+                flash(
+                    "Synchronisation exécutée avec succès."
+                )
+
+            else:
+
+                flash(
+                    "La synchronisation a rencontré une erreur."
+                )
+
+        finally:
+
+            verrou_synchronisation.release()
+
+        # Éviter de relancer le POST en actualisant la page
+        return redirect(
+            url_for("page_synchronisation")
+        )
+
+    # =====================================
+    # AFFICHAGE DE LA PAGE
+    # =====================================
+
+    historique = charger_historique()
+
+    derniere = (
+        historique[0]
+        if historique
+        else None
+    )
+
+    return render_template(
+        "synchronisation.html",
+        historique=historique,
+        derniere=derniere,
+        nombre_synchronisations=len(historique),
+        gestion_locale=gestion_locale,
+        csrf_token_synchronisation=(
+            session.get("csrf_synchronisation")
+            if gestion_locale
+            else None
+        )
+    )
 
 
 @app.route("/supprimer-reference", methods=["POST"])

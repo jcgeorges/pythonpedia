@@ -824,3 +824,69 @@ input {
     }
 
 }
+
+/* ==========================================
+   PAGE SYNCHRONISATION
+   ========================================== */
+
+.sync-result {
+    display: block;
+    margin-top: 16px;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--text);
+}
+
+.sync-summary {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+    margin: 22px 0;
+}
+
+.sync-summary > div {
+    background: #f8fafc;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+}
+
+.sync-summary strong {
+    display: block;
+    font-size: 28px;
+    font-weight: 700;
+    color: #059669;
+}
+
+.sync-summary > div:nth-child(2) strong {
+    color: #6366f1;
+}
+
+.sync-summary span {
+    display: block;
+    margin-top: 8px;
+    font-size: 13px;
+    color: var(--muted);
+}
+
+.sync-waiting {
+    margin-top: 18px;
+    color: #b45309;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.sync-waiting[hidden] {
+    display: none;
+}
+
+#btn-synchronisation:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+}
+
+@media (max-width: 700px) {
+    .sync-summary {
+        grid-template-columns: 1fr;
+    }
+}

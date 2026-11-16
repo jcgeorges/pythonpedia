@@ -1,21 +1,365 @@
 {% extends "base.html" %}
 
-{% block title %}Synchronisation — Pythonpédia{% endblock %}
+{% block title %}
+Synchronisation — Pythonpédia
+{% endblock %}
 
-{% block page_title %}Synchronisation{% endblock %}
+{% block page_title %}
+Synchronisation
+{% endblock %}
 
 {% block page_subtitle %}
-Collecter les références des autres serveurs.
+Réplication des références entre les serveurs Pythonpédia.
 {% endblock %}
 
 {% block content %}
 
-<section class="panel">
-    <h2>Synchronisation des données</h2>
-    <p>
-        Le bouton de synchronisation et son historique
-        seront déplacés dans cette section.
-    </p>
+<!-- STATISTIQUES -->
+
+<section class="stats-grid">
+
+    <div class="stat-card stat-purple">
+        <h3>Synchronisations</h3>
+
+        <span class="value">
+            {{ nombre_synchronisations }}
+        </span>
+
+        <span class="description">
+            Exécutions conservées
+        </span>
+    </div>
+
+    <div class="stat-card stat-green">
+        <h3>Dernier ajout d'URL</h3>
+
+        <span class="value">
+            {% if derniere and derniere.nouvelles_urls is not none %}
+                +{{ derniere.nouvelles_urls }}
+            {% else %}
+                —
+            {% endif %}
+        </span>
+
+        <span class="description">
+            Références ajoutées
+        </span>
+    </div>
+
+    <div class="stat-card stat-blue">
+        <h3>Serveurs découverts</h3>
+
+        <span class="value">
+            {% if derniere and derniere.nouveaux_serveurs is not none %}
+                +{{ derniere.nouveaux_serveurs }}
+            {% else %}
+                —
+            {% endif %}
+        </span>
+
+        <span class="description">
+            Dernière exécution
+        </span>
+    </div>
+
+    <div class="stat-card
+        {% if derniere and not derniere.succes %}
+            stat-red
+        {% else %}
+            stat-orange
+        {% endif %}
+    ">
+
+        <h3>Dernier résultat</h3>
+
+        <span class="sync-result">
+
+            {% if not derniere %}
+                Non exécutée
+            {% elif derniere.succes %}
+                Succès
+            {% else %}
+                Échec
+            {% endif %}
+
+        </span>
+
+        <span class="description">
+            {% if derniere %}
+                {{ derniere.date }}
+            {% else %}
+                Aucun historique
+            {% endif %}
+        </span>
+    </div>
+
 </section>
+
+
+<!-- LANCEMENT -->
+
+<section class="panel">
+
+    <div class="section-heading">
+        <div>
+            <h2>Lancer une synchronisation</h2>
+
+            <p class="panel-description">
+                Récupérer les nouvelles références et découvrir
+                les serveurs connus par les autres participants.
+            </p>
+        </div>
+    </div>
+
+    {% if gestion_locale %}
+
+        <form
+            action="{{ url_for('page_synchronisation') }}"
+            method="POST"
+            id="form-synchronisation"
+        >
+
+            <input
+                type="hidden"
+                name="csrf_token"
+                value="{{ csrf_token_synchronisation }}"
+            >
+
+            <button
+                type="submit"
+                class="btn btn-green"
+                id="btn-synchronisation"
+            >
+                Synchroniser maintenant
+            </button>
+
+        </form>
+
+        <p
+            id="message-attente"
+            class="sync-waiting"
+            role="status"
+            hidden
+        >
+            Synchronisation en cours...
+        </p>
+
+    {% else %}
+
+        <p class="empty-state">
+            Le lancement de la synchronisation est réservé
+            à l'interface locale.
+        </p>
+
+    {% endif %}
+
+</section>
+
+
+<!-- DERNIER RAPPORT -->
+
+{% if gestion_locale %}
+
+{% if derniere %}
+
+<section class="panel">
+
+    <div class="section-heading">
+
+        <h2>Dernier rapport</h2>
+
+        {% if derniere.succes %}
+
+            <span class="badge badge-green">
+                Exécution réussie
+            </span>
+
+        {% else %}
+
+            <span class="badge badge-red">
+                Échec de l'exécution
+            </span>
+
+        {% endif %}
+
+    </div>
+
+    <p class="panel-description">
+        Exécutée le {{ derniere.date }}
+    </p>
+
+    <div class="sync-summary">
+
+        <div>
+            <strong>
+                {% if derniere.nouvelles_urls is not none %}
+                    +{{ derniere.nouvelles_urls }}
+                {% else %}
+                    —
+                {% endif %}
+            </strong>
+
+            <span>Nouvelles références</span>
+        </div>
+
+        <div>
+            <strong>
+                {% if derniere.nouveaux_serveurs is not none %}
+                    +{{ derniere.nouveaux_serveurs }}
+                {% else %}
+                    —
+                {% endif %}
+            </strong>
+
+            <span>Nouveaux serveurs</span>
+        </div>
+
+    </div>
+
+    <h3>Journal d'exécution</h3>
+
+    <pre class="report">{{ derniere.message }}</pre>
+
+</section>
+
+{% endif %}
+
+
+<!-- HISTORIQUE -->
+
+<section class="panel">
+
+    <div class="section-heading">
+
+        <h2>Historique des synchronisations</h2>
+
+        <span class="badge badge-purple">
+            {{ nombre_synchronisations }} exécutions
+        </span>
+
+    </div>
+
+    <div class="table-container">
+
+        <table class="references-table">
+
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Références ajoutées</th>
+                    <th>Serveurs découverts</th>
+                    <th>Résultat</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                {% for execution in historique %}
+
+                <tr>
+
+                    <td>
+                        {{ execution.date }}
+                    </td>
+
+                    <td>
+
+                        {% if execution.nouvelles_urls is not none %}
+                            <span class="badge badge-green">
+                                +{{ execution.nouvelles_urls }}
+                            </span>
+                        {% else %}
+                            —
+                        {% endif %}
+
+                    </td>
+
+                    <td>
+
+                        {% if execution.nouveaux_serveurs is not none %}
+                            <span class="badge badge-purple">
+                                +{{ execution.nouveaux_serveurs }}
+                            </span>
+                        {% else %}
+                            —
+                        {% endif %}
+
+                    </td>
+
+                    <td>
+
+                        {% if execution.succes %}
+
+                            <span class="server-status status-online">
+                                <i class="status-dot dot-green"></i>
+                                Succès
+                            </span>
+
+                        {% else %}
+
+                            <span class="server-status status-offline">
+                                <i class="status-dot dot-red"></i>
+                                Échec
+                            </span>
+
+                        {% endif %}
+
+                    </td>
+
+                </tr>
+
+                {% else %}
+
+                <tr>
+                    <td colspan="4" class="empty-state">
+                        Aucune synchronisation enregistrée.
+                    </td>
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</section>
+
+{% endif %}
+
+
+<!-- ÉTAT D'ATTENTE -->
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const formulaire = document.getElementById(
+        "form-synchronisation"
+    );
+
+    if (!formulaire) {
+        return;
+    }
+
+    formulaire.addEventListener("submit", function () {
+
+        const bouton = document.getElementById(
+            "btn-synchronisation"
+        );
+
+        const message = document.getElementById(
+            "message-attente"
+        );
+
+        bouton.disabled = true;
+        bouton.textContent = "Synchronisation en cours...";
+
+        message.hidden = false;
+
+    });
+
+});
+</script>
 
 {% endblock %}

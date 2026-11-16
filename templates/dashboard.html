@@ -321,64 +321,26 @@ Statistiques et activité de l'encyclopédie Python.
     </div>
 
 
-    <!-- SYNCHRONISATION -->
+<!-- SYNCHRONISATION -->
 
-    <div class="panel">
+<div class="panel">
 
-        <h2>Synchronisation</h2>
+    <h2>Synchronisation</h2>
 
-        <p class="panel-description">
-            Récupérer les références et les annuaires
-            des autres serveurs.
-        </p>
+    <p class="panel-description">
+        Consulter l'historique des synchronisations
+        et récupérer les nouvelles références
+        des autres serveurs.
+    </p>
 
-        <form
-            action="{{ url_for('lancer_synchronisation') }}"
-            method="POST"
-        >
+    <a
+        href="{{ url_for('page_synchronisation') }}"
+        class="btn btn-green"
+    >
+        Accéder à la synchronisation
+    </a>
 
-            <input
-                type="hidden"
-                name="csrf_token"
-                value="{{ csrf_token }}"
-            >
-
-            <button
-                type="submit"
-                class="btn btn-green"
-            >
-                Synchroniser maintenant
-            </button>
-
-        </form>
-
-        {% if rapport_synchro %}
-
-            <h3>Dernière synchronisation</h3>
-
-            <p>
-                {{ rapport_synchro.date }}
-            </p>
-
-            {% if rapport_synchro.succes %}
-
-                <p class="status-success">
-                    Script exécuté correctement
-                </p>
-
-            {% else %}
-
-                <p class="status-error">
-                    Erreur pendant la synchronisation
-                </p>
-
-            {% endif %}
-
-            <pre class="report">{{ rapport_synchro.message }}</pre>
-
-        {% endif %}
-
-    </div>
+</div>
 
 </section>
 
