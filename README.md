@@ -26,6 +26,43 @@ Les actions de gestion sont réservées aux requêtes locales et protégées par
 - `fcntl.flock` pour la coordination des écritures entre processus sous Linux
 - `pytest` pour les tests
 
+## Aperçu de l'application
+
+Pythonpédia dispose d'une interface web permettant de consulter les
+références Python et de gérer les différents serveurs de l'encyclopédie.
+
+### Vue d'ensemble
+
+Le tableau de bord présente les principales statistiques de
+l'application : topics, items, références et serveurs connus.
+
+![Vue d'ensemble de Pythonpédia](docs/images/dashboard.png)
+
+### Gestion des références
+
+Cette interface permet de rechercher des ressources Python,
+d'ajouter de nouvelles références et de supprimer celles
+qui ne sont plus nécessaires.
+
+![Gestion des références](docs/images/references.png)
+
+### Gestion des serveurs
+
+L'annuaire répertorie les serveurs Pythonpédia et permet
+de vérifier leur disponibilité.
+
+![Annuaire des serveurs](docs/images/serveurs.png)
+
+### Synchronisation distribuée
+
+Cette page permet de lancer la réplication des données,
+de consulter les résultats et de suivre l'historique
+des synchronisations.
+
+![Synchronisation des serveurs](docs/images/synchronisation.png)
+
+
+
 ## Installation (Ubuntu/Linux)
 
 Prérequis : Python 3, `venv` et Git.
