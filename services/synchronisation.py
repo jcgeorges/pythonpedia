@@ -1,60 +1,48 @@
+"""Synchronisation des références et découverte des serveurs Pythonpédia."""
 
-import os
-import json
 import ipaddress
-from pathlib import Path
+import os
+from copy import deepcopy
 from urllib.parse import quote, urlsplit
-from services.database import (
-    lire_json,
-    enregistrer_json,
-    FICHIER_TOPICS,
-    FICHIER_SERVEURS
-)
 
 import requests
 
-
-# Chemins vers les fichiers de données
-BASE_DIR = Path(__file__).resolve().parent.parent
-# FICHIER_TOPICS = BASE_DIR / "data" / "topics.json"
-# FICHIER_SERVEURS = BASE_DIR / "data" / "serveurs.json"
+from services.database import (
+    FICHIER_SERVEURS,
+    FICHIER_TOPICS,
+    enregistrer_json,
+    lire_json,
+)
+from services.verrou import verrou_base
 
 
 def requete_json(url):
-    """Interroger une API et récupérer sa réponse JSON."""
-    reponse = requests.get(url, timeout=5)
+    """Récupérer une réponse JSON avec un délai maximal de cinq secondes."""
+    reponse = requests.get(url, timeout=5, allow_redirects=False)
     reponse.raise_for_status()
     return reponse.json()
 
 
 def fusionner_topics(topics_locaux, topic, items_distants):
-    """Ajouter les URL absentes sans supprimer les anciennes."""
-
+    """Ajouter uniquement les URL manquantes, sans effacer les autres."""
     modifications = 0
 
     if not isinstance(items_distants, dict):
         return modifications
 
-    # Créer le topic s'il n'existe pas
     if topic not in topics_locaux:
         topics_locaux[topic] = {}
 
-    # Parcourir les items du serveur distant
     for item, urls in items_distants.items():
-
         if not isinstance(item, str) or not isinstance(urls, list):
             continue
 
-        # Créer l'item s'il n'existe pas
         if item not in topics_locaux[topic]:
             topics_locaux[topic][item] = []
 
-        # Ajouter uniquement les nouvelles URL
         for url in urls:
-
             if not isinstance(url, str):
                 continue
-
             if url not in topics_locaux[topic][item]:
                 topics_locaux[topic][item].append(url)
                 modifications += 1
@@ -62,16 +50,13 @@ def fusionner_topics(topics_locaux, topic, items_distants):
     return modifications
 
 
-
 def adresse_valide(adresse):
-    """Vérifie qu'une adresse peut désigner un serveur distant."""
-
+    """Contrôler le format des adresses annoncées dans les annuaires."""
     if not isinstance(adresse, str):
         return False
 
     try:
         url = urlsplit(adresse)
-
         if (
             url.scheme != "http"
             or url.hostname is None
@@ -84,46 +69,36 @@ def adresse_valide(adresse):
         ):
             return False
 
-        # Vérification des adresses IP littérales
         try:
             ip = ipaddress.ip_address(url.hostname)
-
-            mode_simulation = (
-                os.environ.get("PYTHONPEDIA_ALLOW_LOOPBACK") == "1"
-                )
-            
+            mode_simulation = os.environ.get("PYTHONPEDIA_ALLOW_LOOPBACK") == "1"
             if ip.is_loopback and not mode_simulation:
                 return False
-            
             if (
                 ip.is_unspecified
                 or ip.is_multicast
                 or ip.is_link_local
-                or ip.is_reserved):
-                
+                or ip.is_reserved
+            ):
                 return False
-
         except ValueError:
-            # Les noms DNS sont acceptés
+            # On accepte les noms DNS (sans effectuer de résolution ici).
             pass
 
         return True
-
     except ValueError:
         return False
 
 
 def synchroniser():
-    """Synchroniser les références et l'annuaire local."""
+    """Télécharger hors verrou, puis fusionner sous verrou interprocessus.
 
-    topics_locaux = lire_json(FICHIER_TOPICS)
-    serveurs = lire_json(FICHIER_SERVEURS)
-
-    # Copie de la liste initiale pour cette exécution
-    serveurs_a_contacter = list(serveurs)
+    La découverte de nouveaux serveurs prend effet à l'exécution suivante.
+    """
+    with verrou_base():
+        serveurs_a_contacter = list(lire_json(FICHIER_SERVEURS))
 
     for serveur in serveurs_a_contacter:
-
         if not adresse_valide(serveur):
             print("Adresse de serveur invalide :", serveur)
             continue
@@ -131,66 +106,68 @@ def synchroniser():
         serveur = serveur.rstrip("/")
         print(f"\nConnexion à {serveur}")
 
-        # 1. Récupération des topics
-        try:
-            topics_distants = requete_json(
-                f"{serveur}/ws/topics"
-            )
+        # Téléchargements : aucun verrou n'est détenu pendant les appels réseau.
+        topics_recus = []
+        annuaire_recu = []
 
+        try:
+            topics_distants = requete_json(f"{serveur}/ws/topics")
             if not isinstance(topics_distants, list):
                 raise ValueError("Liste de topics invalide")
 
             for topic in topics_distants:
-
                 if not isinstance(topic, str):
                     continue
-
                 try:
                     items = requete_json(
                         f"{serveur}/ws/topic/{quote(topic, safe='')}"
                     )
-
                     if not isinstance(items, dict):
                         raise ValueError("Format du topic invalide")
+                    topics_recus.append((topic, items))
+                except (requests.RequestException, ValueError) as erreur:
+                    print(f"  Erreur pour {topic} : {erreur}")
+        except (requests.RequestException, ValueError) as erreur:
+            print("Impossible de récupérer les topics :", erreur)
 
-                    nb = fusionner_topics(
-                        topics_locaux, topic, items
-                    )
-
-                    print(f"  {topic} : {nb} nouvelle(s) URL")
-
-                except (requests.RequestException, ValueError) as e:
-                    print(f"  Erreur pour {topic} : {e}")
-
-        except (requests.RequestException, ValueError) as e:
-            print("Impossible de récupérer les topics :", e)
-
-        # 2. Récupération de l'annuaire
         try:
-            annuaire = requete_json(
-                f"{serveur}/ws/annuaire"
-            )
-
+            annuaire = requete_json(f"{serveur}/ws/annuaire")
             if not isinstance(annuaire, list):
                 raise ValueError("Annuaire invalide")
+            annuaire_recu = [
+                adresse.rstrip("/")
+                for adresse in annuaire
+                if adresse_valide(adresse)
+            ]
+        except (requests.RequestException, ValueError) as erreur:
+            print("Impossible de récupérer l'annuaire :", erreur)
 
-            for adresse in annuaire:
+        # Lecture-Fusion-Écriture dans une seule section critique.
+        # On RELIT les JSON ici pour conserver les modifications faites
+        # depuis le tableau de bord pendant les requêtes HTTP.
+        with verrou_base():
+            topics_locaux = lire_json(FICHIER_TOPICS)
+            serveurs = lire_json(FICHIER_SERVEURS)
+            topics_modifies = False
+            serveurs_modifies = False
 
-                if not adresse_valide(adresse):
-                    continue
+            for topic, items in topics_recus:
+                etat_precedent = deepcopy(topics_locaux.get(topic))
+                nb = fusionner_topics(topics_locaux, topic, items)
+                if topics_locaux.get(topic) != etat_precedent:
+                    topics_modifies = True
+                print(f"  {topic} : {nb} nouvelle(s) URL")
 
-                adresse = adresse.rstrip("/")
-
+            for adresse in annuaire_recu:
                 if adresse not in serveurs:
                     serveurs.append(adresse)
+                    serveurs_modifies = True
                     print("  Nouveau serveur :", adresse)
 
-        except (requests.RequestException, ValueError) as e:
-            print("Impossible de récupérer l'annuaire :", e)
-
-        # Sauvegarde après chaque serveur
-        enregistrer_json(FICHIER_TOPICS, topics_locaux)
-        enregistrer_json(FICHIER_SERVEURS, serveurs)
+            if topics_modifies:
+                enregistrer_json(FICHIER_TOPICS, topics_locaux)
+            if serveurs_modifies:
+                enregistrer_json(FICHIER_SERVEURS, serveurs)
 
     print("\nSynchronisation terminée.")
 

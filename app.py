@@ -1,74 +1,37 @@
-import os 
-import json
-import secrets
-import subprocess
-import sys
-import threading
-from datetime import datetime
-from pathlib import Path
-from urllib.parse import urlsplit
-from services.database import (
-    lire_json,
-    enregistrer_json,
-    FICHIER_TOPICS,
-    FICHIER_SERVEURS
-)
+"""Application Flask Pythonpédia : API, tableau de bord et gestion locale."""
 
 import hmac
+import os
 import secrets
 import subprocess
 import sys
 import threading
+from pathlib import Path
+from urllib.parse import urlsplit
 
+import requests
 from flask import (
-    abort,
-    flash,
-    redirect,
-    render_template,
-    request,
-    session,
-    url_for
+    Flask, abort, flash, jsonify, redirect, render_template,
+    request, session, url_for,
 )
 
 from services.database import (
-    lire_json,
-    FICHIER_TOPICS,
-    FICHIER_SERVEURS
+    FICHIER_SERVEURS, FICHIER_TOPICS, enregistrer_json, lire_json,
 )
-
-from services.historique import (
-    charger_historique,
-    ajouter_historique
-)
-
-from flask import (
-    Flask,
-    jsonify,
-    render_template,
-    request,
-    redirect,
-    url_for,
-    flash,
-    session,
-    abort
-)
+from services.historique import ajouter_historique, charger_historique
+from services.verrou import verrou_base
 
 # ------------------------------------------
 # CONFIGURATION
 # ------------------------------------------
 verrou_synchronisation = threading.Lock()
-verrou_serveurs = threading.Lock()
 
 app = Flask(__name__)
 app.secret_key = secrets.token_hex(32)
 
 BASE_DIR = Path(__file__).resolve().parent
 
-# FICHIER_TOPICS = BASE_DIR / "data" / "topics.json"
-# FICHIER_SERVEURS = BASE_DIR / "data" / "serveurs.json"
-SCRIPT_SYNCHRO = BASE_DIR / "services" / "synchronisation.py"
 
-verrou_donnees = threading.Lock()
 dernier_rapport = None
 
 
@@ -215,13 +178,11 @@ def etat_base():
     et des serveurs enregistrés.
     """
 
-    topics = lire_json(FICHIER_TOPICS)
-    serveurs = lire_json(FICHIER_SERVEURS)
+    with verrou_base():
+        topics = lire_json(FICHIER_TOPICS)
+        serveurs = lire_json(FICHIER_SERVEURS)
 
-    return (
-        ensemble_references(topics),
-        set(serveurs)
-    )
+    return (ensemble_references(topics), set(serveurs))
 
 
 
@@ -367,11 +328,7 @@ def ajouter_reference():
         flash("Informations invalides.")
         return redirect(url_for("page_references"))
 
-    if not verrou_donnees.acquire(blocking=False):
-        flash("Une opération est déjà en cours.")
-        return redirect(url_for("page_references"))
-
-    try:
+    with verrou_base():
         topics = lire_json(FICHIER_TOPICS)
 
         if topic not in topics:
@@ -382,15 +339,10 @@ def ajouter_reference():
 
         if url in topics[topic][item]:
             flash("Cette URL existe déjà dans cet item.")
-
         else:
             topics[topic][item].append(url)
             enregistrer_json(FICHIER_TOPICS, topics)
-
             flash("Référence ajoutée avec succès.")
-
-    finally:
-        verrou_donnees.release()
 
     return redirect(url_for("page_references"))
 
@@ -399,72 +351,73 @@ def ajouter_reference():
 # SYNCHRONISATION
 # ------------------------------------------
 
-@app.route("/synchroniser", methods=["POST"])
-def lancer_synchronisation():
+def executer_synchronisation():
+    """Exécuter le script sans bloquer la base pendant les requêtes HTTP.
 
+    Cette fonction prend le verrou de synchronisation du processus Flask.
+    Le script enfant utilise verrou_base() uniquement lors de la fusion locale.
+    """
     global dernier_rapport
 
-    verifier_modification()
-
-    if not verrou_donnees.acquire(blocking=False):
-        flash("Une opération est déjà en cours.")
-        return redirect(url_for("tableau_de_bord"))
+    if not verrou_synchronisation.acquire(blocking=False):
+        return False
 
     try:
-        resultat = subprocess.run(
-            [sys.executable, "-m", "services.synchronisation"],
-            cwd=BASE_DIR,
-            capture_output=True,
-            text=True,
-            encoding="utf-8",
-            errors="replace",
-            timeout=360
-        )
+        succes = False
+        nouvelles_urls = None
+        nouveaux_serveurs = None
+        message = ""
 
-        sortie = resultat.stdout
+        try:
+            references_avant, serveurs_avant = etat_base()
+            resultat = subprocess.run(
+                [sys.executable, "-m", "services.synchronisation"],
+                cwd=BASE_DIR,
+                capture_output=True,
+                text=True,
+                encoding="utf-8",
+                errors="replace",
+                timeout=90,
+                check=False,
+            )
+            message = ((resultat.stdout or "") + "\n" + (resultat.stderr or "")).strip()
+            succes = resultat.returncode == 0
 
-        if resultat.stderr:
-            sortie += "\n" + resultat.stderr
+            references_apres, serveurs_apres = etat_base()
+            nouvelles_urls = len(references_apres - references_avant)
+            nouveaux_serveurs = len(serveurs_apres - serveurs_avant)
+            if not message:
+                message = "Synchronisation terminée sans message supplémentaire."
 
-        dernier_rapport = {
-            "date": datetime.now().strftime(
-                "%d/%m/%Y %H:%M"
-            ),
-            "succes": resultat.returncode == 0,
-            "message": sortie[-12000:]
-        }
+        except subprocess.TimeoutExpired:
+            message = "La synchronisation a dépassé le délai de 90 secondes."
+        except (OSError, ValueError) as erreur:
+            message = f"Erreur pendant la synchronisation : {erreur}"
 
-        if resultat.returncode == 0:
-            flash("Synchronisation exécutée.")
-        else:
-            flash("Erreur pendant la synchronisation.")
+        # Le fichier d'historique est partagé par les processus Flask.
+        with verrou_base():
+            rapport = ajouter_historique(
+                succes=succes,
+                nouvelles_urls=nouvelles_urls,
+                nouveaux_serveurs=nouveaux_serveurs,
+                message=message,
+            )
 
-    except subprocess.TimeoutExpired:
-        dernier_rapport = {
-            "date": datetime.now().strftime(
-                "%d/%m/%Y %H:%M"
-            ),
-            "succes": False,
-            "message": "Délai de synchronisation dépassé."
-        }
-
-        flash("La synchronisation a dépassé le délai.")
-
-    except OSError as erreur:
-        dernier_rapport = {
-            "date": datetime.now().strftime(
-                "%d/%m/%Y %H:%M"
-            ),
-            "succes": False,
-            "message": str(erreur)
-        }
-
-        flash("Impossible de lancer la synchronisation.")
-
+        dernier_rapport = rapport
+        return True
     finally:
-        verrou_donnees.release()
+        verrou_synchronisation.release()
 
-    return redirect(url_for("tableau_de_bord"))
+
+@app.route("/synchroniser", methods=["POST"])
+def lancer_synchronisation():
+    """Ancienne route conservée pour compatibilité avec le tableau de bord."""
+    verifier_modification()
+    if not executer_synchronisation():
+        flash("Une synchronisation est déjà en cours.")
+    else:
+        flash("Synchronisation terminée. Consulte l'historique.")
+    return redirect(url_for("page_synchronisation"))
 
 
 @app.route("/dashboard/references", methods=["GET"])
@@ -621,112 +574,12 @@ def page_synchronisation():
         ):
             abort(403)
 
-        # Empêcher deux exécutions simultanées
-        if not verrou_synchronisation.acquire(
-            blocking=False
-        ):
-            flash(
-                "Une synchronisation est déjà en cours."
-            )
+        if not executer_synchronisation():
+            flash("Une synchronisation est déjà en cours.")
+        else:
+            flash("Synchronisation terminée. Consulte le dernier rapport.")
 
-            return redirect(
-                url_for("page_synchronisation")
-            )
-
-        try:
-
-            succes = False
-            nouvelles_urls = None
-            nouveaux_serveurs = None
-            message = ""
-
-            try:
-
-                # État de la base avant synchronisation
-                references_avant, serveurs_avant = etat_base()
-
-                # Exécuter le script existant
-                resultat = subprocess.run(
-                    [
-                        sys.executable,
-                        "-m",
-                        "services.synchronisation"
-                    ],
-                    cwd=BASE_DIR,
-                    capture_output=True,
-                    text=True,
-                    timeout=90,
-                    check=False
-                )
-
-                # Récupérer le rapport
-                message = (
-                    (resultat.stdout or "")
-                    + "\n"
-                    + (resultat.stderr or "")
-                ).strip()
-
-                succes = resultat.returncode == 0
-
-                # État de la base après synchronisation
-                references_apres, serveurs_apres = etat_base()
-
-                nouvelles_urls = len(
-                    references_apres - references_avant
-                )
-
-                nouveaux_serveurs = len(
-                    serveurs_apres - serveurs_avant
-                )
-
-                if not message:
-                    message = (
-                        "Synchronisation terminée sans "
-                        "message supplémentaire."
-                    )
-
-            except subprocess.TimeoutExpired:
-
-                message = (
-                    "La synchronisation a dépassé "
-                    "le délai autorisé de 90 secondes."
-                )
-
-            except Exception as erreur:
-
-                message = (
-                    f"Erreur pendant la synchronisation : "
-                    f"{erreur}"
-                )
-
-            # Enregistrer le résultat
-            ajouter_historique(
-                succes=succes,
-                nouvelles_urls=nouvelles_urls,
-                nouveaux_serveurs=nouveaux_serveurs,
-                message=message
-            )
-
-            if succes:
-
-                flash(
-                    "Synchronisation exécutée avec succès."
-                )
-
-            else:
-
-                flash(
-                    "La synchronisation a rencontré une erreur."
-                )
-
-        finally:
-
-            verrou_synchronisation.release()
-
-        # Éviter de relancer le POST en actualisant la page
-        return redirect(
-            url_for("page_synchronisation")
-        )
+        return redirect(url_for("page_synchronisation"))
 
     # =====================================
     # AFFICHAGE DE LA PAGE
@@ -765,36 +618,19 @@ def supprimer_reference():
     item = request.form.get("item", "")
     url = request.form.get("url", "")
 
-    # Empêcher la suppression pendant une synchronisation
-    if not verrou_donnees.acquire(blocking=False):
-        flash("Une opération est déjà en cours.")
-        return redirect(url_for("page_references"))
-
-    try:
-
-        # Charger les données
+    with verrou_base():
         topics = lire_json(FICHIER_TOPICS)
 
-        # Vérifier que la référence existe
         if (
             topic in topics
             and item in topics[topic]
             and url in topics[topic][item]
         ):
-
-            # Supprimer uniquement l'URL demandée
             topics[topic][item].remove(url)
-
-            # Enregistrer la base mise à jour
             enregistrer_json(FICHIER_TOPICS, topics)
-
             flash("Référence supprimée avec succès.")
-
         else:
             flash("Référence introuvable.")
-
-    finally:
-        verrou_donnees.release()
 
     return redirect(url_for("page_references"))
 
@@ -827,7 +663,7 @@ def action_serveurs():
                 url_for("page_serveurs")
             )
 
-        with verrou_serveurs:
+        with verrou_base():
 
             serveurs = lire_json(FICHIER_SERVEURS)
 
@@ -852,7 +688,7 @@ def action_serveurs():
 
         adresse = request.form.get("adresse", "")
 
-        with verrou_serveurs:
+        with verrou_base():
 
             serveurs = lire_json(FICHIER_SERVEURS)
 
